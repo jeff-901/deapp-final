@@ -1,4 +1,4 @@
-pragma solidity >=0.7.0;
+pragma solidity  >=0.7.0;
 // using SafeMath for uint256
 
 contract Campaign {
@@ -11,8 +11,8 @@ contract Campaign {
   uint start_sell_time;
   string abstraction;
   address[] seat_owner;
-  constructor(memory string _campaign_name, uint _seats, uint _price, uint _campaign_start_time, 
-  uint _campaign_end_time, uint _start_sell_time, memory string _abstraction) public {
+  constructor(string memory _campaign_name, uint _seats, uint _price, uint _campaign_start_time, 
+  uint _campaign_end_time, uint _start_sell_time, string memory _abstraction) public {
     owner = msg.sender;
     seats = _seats;
     campaign_name = _campaign_name;
@@ -22,11 +22,7 @@ contract Campaign {
     start_sell_time = _start_sell_time;
     abstraction = _abstraction;
     seat_owner = new address[](_seats);
-     for (uint i=0; i<seats; i++){
 
-            seat_owner[i]=0x00000000000000000000000000000000;
-
-      }
   }
 
   modifier restricted() {
@@ -37,7 +33,7 @@ contract Campaign {
   function buy(address buyer) public payable returns (uint seat_num){
       for (uint i=0; i<seats; i++){
           address temp = seat_owner[uint(i)];
-          if (temp==0x00000000000000000000000000000000){
+          if (temp==address(0x00000000000000000000000000000000) ){
               seat_owner[i]=buyer;
             //   buyer.transfer(price);
               return i;
@@ -46,7 +42,7 @@ contract Campaign {
   }
 
   function withdraw() public restricted {
-      if (block.timestamp > campaign_end_time){
+      if (block.timestamp > campaign_end_time) {
           msg.sender.call{value: address(this).balance}('');
       }
   }
