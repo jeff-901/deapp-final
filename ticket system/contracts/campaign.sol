@@ -30,12 +30,12 @@ contract Campaign {
     _;
   }
 
-  function buy(address buyer) public payable returns (uint seat_num){
+  function buy() public payable returns (uint seat_num){
       for (uint i=0; i<seats; i++){
           address temp = seat_owner[uint(i)];
           if (temp==address(0x00000000000000000000000000000000) ){
-              seat_owner[i]=buyer;
-            //   buyer.transfer(price);
+              seat_owner[i]=msg.sender;
+              msg.sender.transfer(price);
               return i;
           }
       }
