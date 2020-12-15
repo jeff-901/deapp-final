@@ -1,5 +1,5 @@
-const TicketServer = artifacts.require("TicketServer");
+// const TicketServer = artifacts.require("TicketServer");
 
-module.exports = function(deployer) {
-  deployer.deploy(TicketServer);
-};
+// module.exports = function(deployer) {
+//   deployer.deploy(TicketServer);
+// };
