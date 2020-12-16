@@ -1,10 +1,5 @@
 pragma solidity  >=0.7.0;
-<<<<<<< HEAD
 // using SafeMath for uint256
-=======
-
-using SafeMath for uint256
->>>>>>> abd9670b2b51e6eecef4c9df608de8e4746d7ae6
 
 contract Campaign {
   address public owner;
@@ -36,7 +31,7 @@ contract Campaign {
     _;
   }
 
-  function buy(address payable buyer, uint amount) public payable returns (uint[] memory seat_num){
+  function buy(address buyer, uint amount) public payable returns (uint[] memory seat_num){
       uint j=0;
       // uint k=0;
       seat_num = new uint[](amount);
@@ -45,7 +40,7 @@ contract Campaign {
           address temp = seat_owner[uint(i)];
           if (temp==address(0x00000000000000000000000000000000) && remain >= amount){
               seat_owner[i]=buyer;
-              buyer.transfer(price);
+              // buyer.transfer(price);
               remain--;
               seat_num[j]=i;
               j++;
