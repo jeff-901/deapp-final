@@ -2,6 +2,10 @@ pragma solidity >=0.7.0;
 
 contract User {
 
+    event OnAddCampaign(address user, address capmaign_addr, uint Id);
+    event OnAddTicket(address user, address attend_addr, uint Id);
+    event OnCompleteCampaign(address user, address capmaign_addr, uint Id);
+    event OnCompleteTicket(address user, address attend_addr, uint Id);
 /*
 If a campaign is completed. Server will find the host of campaign (user),
 call CompleteCampaign(address campaign_address). The address will be removed from
@@ -12,21 +16,22 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
     string public name;
     string private pwd;
 
-    struct OwnCampaigns {
+    struct OwnCampaign {
         address campaign_address;
         bool isValid;
         bool isEnd;
     }
-    struct OwnTickets {
+    struct OwnTicket {
         address attend_address;
         bool isValid;
         bool isEnd;
+        uint seat;
     }
     mapping (address => uint) campaign_addr_to_id;
     mapping (address => uint) ticket_addr_to_id;
 
-    OwnCampaigns[] own_campaigns;
-    OwnTickets[] own_tickets;
+    OwnCampaign[] own_campaigns;
+    OwnTicket[] own_tickets;
 
 
     constructor(string memory _name, string memory _pwd) public {
@@ -53,7 +58,23 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
         return own_campaigns[_ticketId].isValid;
     }
 
-    function view_campaigns() public view returns(address[] memory) {
+    function addCampaign(address _campaign_address) public {
+        OwnCampaign memory campaign = OwnCampaign(_campaign_address, true, false);
+        own_campaigns.push(campaign);
+        uint Id = own_campaigns.length - 1;
+
+        emit OnAddCampaign(msg.sender, _campaign_address, Id);
+    }
+
+    function addTicket(address _ticket_address, uint seatId) public {
+        OwnTicket memory ticket = OwnTicket(_ticket_address, true, false, seatId);
+        own_tickets.push(ticket);
+        uint Id = own_tickets.length - 1;
+
+        emit OnAddTicket(msg.sender, _ticket_address, Id);
+    }
+
+    function ViewCampaigns() public view returns(address[] memory) {
         uint len = 0;
         uint[] memory count_to_id = new uint[](own_campaigns.length);
         for(uint id = 0; id < own_campaigns.length; id++) {
@@ -69,7 +90,7 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
         return campaignList;
     }
 
-    function view_tickets() public view returns(address[] memory) {
+    function ViewTickets() public view returns(address[] memory) {
         uint len = 0;
         uint[] memory count_to_id = new uint[](own_tickets.length);
         for(uint id = 0; id < own_tickets.length; id++) {
