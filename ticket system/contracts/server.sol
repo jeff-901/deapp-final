@@ -1,5 +1,8 @@
 pragma solidity >=0.7.0;
 // using SafeMath for uint256;
+// pragma solidity  >=0.7.0;
+// using SafeMath for uint256
+
 contract Campaign {
   address public owner;
   uint public seats;
@@ -9,11 +12,14 @@ contract Campaign {
   uint public campaign_end_time;
   uint public start_sell_time;
   string public abstraction;
-  bool public isvalid;
-  uint public remain;
   address[] seat_owner;
-  function buy(address, uint) public payable returns (uint[] memory){}
-  function withdraw() public {}
+  uint256 public remain;
+  
+
+
+  function buy(address , uint ) public payable returns (uint[] memory seat_num){}
+
+  function withdraw() public{  }
 }
 
 contract Server {
@@ -33,9 +39,9 @@ contract Server {
         address[] memory c = new address[](campaigns.length);
         for (uint i = ptr; i<campaigns.length; i++){
             // server_campaign memory tmp = campaigns[i];
-            Campaign campaign = Campaign(campaigns[i].campaign);
+            // Campaign campaign = Campaign(campaigns[i].campaign);
             if (campaigns[i].isvalid){
-                if (campaign.campaign_end_time() >= block.timestamp){
+                if (Campaign(campaigns[i].campaign).campaign_end_time() >= block.timestamp){
                     campaigns[i].isvalid = false;
                     if (i==j+1){
                         j+=1;
@@ -59,4 +65,6 @@ contract Server {
             }
         }
     }
+
+    receive () external payable {}
 }
