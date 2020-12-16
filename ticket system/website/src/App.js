@@ -3,6 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Switch, Route, Redirect } from "react-router-dom";
 import getWeb3 from "./utils/getWeb3";
 import ServerContract from "./build/contracts/Server.json"
+import Creating from "./containers/creating"
 import './App.css';
 
 function App() {
@@ -45,6 +46,11 @@ function App() {
           <Route exact path="/booking">
             <div className="App">
               Booking  
+            </div>
+          </Route>
+          <Route exact path="/creating">
+            <div className="App">
+              <Creating/> 
             </div>
           </Route>
         </Switch>

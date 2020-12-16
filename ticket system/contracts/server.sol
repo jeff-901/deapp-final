@@ -29,6 +29,9 @@ contract Server {
     }
     server_campaign[] public campaigns;
     uint ptr = 0;
+    function callServer(string memory i) public pure returns (string memory) {
+        return(i);
+    }
     function addCampaign(address campaign_address) public {
         campaigns.push(server_campaign(campaign_address, true));
     }
