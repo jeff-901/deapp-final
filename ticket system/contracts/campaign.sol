@@ -1,16 +1,17 @@
 pragma solidity  >=0.7.0;
-// using SafeMath for uint256
+using SafeMath for uint256
 
 contract Campaign {
   address public owner;
-  uint seats;
-  string campaign_name;
-  uint price;
-  uint campaign_start_time;
-  uint campaign_end_time;
-  uint start_sell_time;
-  string abstraction;
+  uint public seats;
+  string public campaign_name;
+  uint public price;
+  uint public campaign_start_time;
+  uint public campaign_end_time;
+  uint public start_sell_time;
+  string public abstraction;
   address[] seat_owner;
+  uint256 public remain;
   constructor(string memory _campaign_name, uint _seats, uint _price, uint _campaign_start_time, 
   uint _campaign_end_time, uint _start_sell_time, string memory _abstraction) public {
     owner = msg.sender;
@@ -22,7 +23,7 @@ contract Campaign {
     start_sell_time = _start_sell_time;
     abstraction = _abstraction;
     seat_owner = new address[](_seats);
-
+    remain = _seats;
   }
 
   modifier restricted() {
@@ -30,14 +31,21 @@ contract Campaign {
     _;
   }
 
-  function buy() public payable returns (uint seat_num){
+  function buy(address buyer, uint amount) public payable returns (uint[] memory seat_num){
+      uint j=0;
+      // uint k=0;
+      seat_num = new uint[](amount);
       for (uint i=0; i<seats; i++){
+        while(j<amount){
           address temp = seat_owner[uint(i)];
-          if (temp==address(0x00000000000000000000000000000000) ){
-              seat_owner[i]=msg.sender;
-              msg.sender.transfer(price);
-              return i;
+          if (temp==address(0x00000000000000000000000000000000) && remain >= amount){
+              seat_owner[i]=buyer;
+              buyer.transfer(price);
+              remain.sub(1);
+              seat_num[j]=i;
+              j++;
           }
+        }
       }
   }
 
