@@ -1,5 +1,10 @@
 pragma solidity  >=0.7.0;
+<<<<<<< HEAD
 // using SafeMath for uint256
+=======
+
+using SafeMath for uint256
+>>>>>>> abd9670b2b51e6eecef4c9df608de8e4746d7ae6
 
 contract Campaign {
   address public owner;
