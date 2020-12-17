@@ -21,7 +21,7 @@ function App() {
     const server_instance = new web3.eth.Contract(
       ServerContract.abi,
       //deployedNetwork && deployedNetwork.address,
-      ServerContract.networks["1608106867056"]["address"]
+      ServerContract.networks["1608194219388"]["address"]
     );
     setServerContract(server_instance);
   }, [])
