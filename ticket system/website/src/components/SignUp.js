@@ -72,7 +72,7 @@ function SignUp(props) {
       setValidUsername(false);
       setUsername("");
       setUsernameHelpText("Username can only contain at most 14 characters!");
-    } else if (!email.match(/[A-Za-z]+[0-9]+/)) {
+    } else if (email.search(/^\w ((-\w )|(\.\w ))*\@[A-Za-z0-9] ((\.|-)[A-Za-z0-9] )*\.[A-Za-z0-9] $/) === -1) {
       setEmailHelpText("Invalid Email!\nDon't try to hack me!");
       setValidEmail(false);
       setEmail("");
