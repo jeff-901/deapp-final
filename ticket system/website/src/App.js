@@ -3,7 +3,10 @@ import { BrowserRouter } from "react-router-dom";
 import { Switch, Route, Redirect } from "react-router-dom";
 import getWeb3 from "./utils/getWeb3";
 import ServerContract from "./build/contracts/Server.json"
+import Main from "./containers/main"
 import Creating from "./containers/creating"
+import Booking from "./containers/booking"
+import Checking from "./containers/checking"
 import './App.css';
 
 function App() {
@@ -20,7 +23,7 @@ function App() {
     const deployedNetwork = ServerContract.networks[networkId];
     const server_instance = new web3.eth.Contract(
       ServerContract.abi,
-      //deployedNetwork && deployedNetwork.address,
+      // deployedNetwork && deployedNetwork.address,
       ServerContract.networks["1608194219388"]["address"]
     );
     setServerContract(server_instance);
@@ -39,18 +42,22 @@ function App() {
         <Switch>
           <Route exact path="/">
             <div className="App">
-              App <br/>
-              <button onClick={print_test}>call</button>
+              <Main/>
             </div>
           </Route>
           <Route exact path="/booking">
             <div className="App">
-              Booking  
+              <Booking/> 
             </div>
           </Route>
           <Route exact path="/creating">
             <div className="App">
               <Creating/> 
+            </div>
+          </Route>
+          <Route exact path="/checking">
+            <div className="App">
+              <Checking/> 
             </div>
           </Route>
         </Switch>

@@ -6,6 +6,9 @@ import Typography from "@material-ui/core/Typography";
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
+import Box from '@material-ui/core/Box';
+import Copyright from '../components/copyright';
+import ReturnMain from '../components/returnmain'
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -167,7 +170,10 @@ export default function Creating(props) {
               </Button>
             </form>
           </div>
-          
+          <Box mt={5}>
+            <ReturnMain />
+            <Copyright />
+          </Box>
         </Container>
       );
 }
