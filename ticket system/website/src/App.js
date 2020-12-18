@@ -13,6 +13,7 @@ function App() {
   const [web3, setWeb3] = useState(null);
   const [accounts, setAccounts] = useState(null);
   const [server_contract, setServerContract] = useState(null);
+  const [user, setUser] = useState(false);
 
   useEffect(async () => {
     const web3 = await getWeb3();
@@ -42,7 +43,7 @@ function App() {
         <Switch>
           <Route exact path="/">
             <div className="App">
-              <Main/>
+              <Main user={user}/>
             </div>
           </Route>
           <Route exact path="/booking">

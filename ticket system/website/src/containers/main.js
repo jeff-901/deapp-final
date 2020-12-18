@@ -105,13 +105,13 @@ const footers = [
   },
 ];
 
-export default function Pricing() {
+export default function Pricing(props) {
   const classes = useStyles();
 
   return (
     <React.Fragment>
       <CssBaseline />
-      <MyAppBar />
+      <MyAppBar user={props.user}/>
       {/* Hero unit */}
       <Container maxWidth="sm" component="main" className={classes.heroContent}>
         <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
