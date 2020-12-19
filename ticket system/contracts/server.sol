@@ -100,6 +100,16 @@ contract Server {
         }
     }
 
+    function checkUser(string memory _name, string memory _password) public returns (bool success) {
+        if (users[msg.sender]!=address(0x0)) {
+            User currentUser = User(users[msg.sender]);
+            string memory name = currentUser.name();
+            string memory password = currentUser.getPassword();
+            return (keccak256(abi.encodePacked(name)) == keccak256(abi.encodePacked(_name)) && 
+            keccak256(abi.encodePacked(password)) == keccak256(abi.encodePacked(_password)));
+        }
+    }
+
     //TODO
     // function getUserTickets() public view returns (Ticket[] memory list) {
     //     
@@ -190,6 +200,11 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
         pwd = _pwd;
     }
 
+    modifier isOwner() {
+        require(owner == msg.sender);
+        _;
+    }
+
     modifier isValidCampaign(uint _campaignId) {
         require(isCampaignValid(_campaignId), "The campaign is end");
         _;
@@ -222,6 +237,10 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
         uint Id = own_tickets.length - 1;
 
         emit OnAddTicket(msg.sender, _ticket_address, Id);
+    }
+
+    function getPassword() public isOwner returns (string memory password){
+        password = pwd;
     }
 
     function ViewCampaigns() public view returns(address[] memory) {

@@ -40,6 +40,11 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
         pwd = _pwd;
     }
 
+    modifier isOwner() {
+        require(owner == msg.sender);
+        _;
+    }
+
     modifier isValidCampaign(uint _campaignId) {
         require(isCampaignValid(_campaignId), "The campaign is end");
         _;
@@ -65,6 +70,11 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
 
         emit OnAddCampaign(msg.sender, _campaign_address, Id);
     }
+
+    function getPassword() public isOwner returns (string memory password){
+        password = pwd;
+    }
+    
 
     function addTicket(address _ticket_address, uint seatId) public {
         OwnTicket memory ticket = OwnTicket(_ticket_address, true, false, seatId);
