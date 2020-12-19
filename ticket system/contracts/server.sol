@@ -3,7 +3,6 @@ pragma solidity >=0.7.0;
 // pragma solidity  >=0.7.0;
 // using SafeMath for uint256
 
-pragma solidity  >=0.7.0;
 // using SafeMath for uint256
 
 contract Campaign {
@@ -91,10 +90,13 @@ contract Server {
         }
     }
 
-    function addUser(string memory _name, string memory _pwd) public returns (address user_address) {
+    function addUser(string memory _name, string memory _pwd) public returns (string memory message,address user_address) {
         if (users[msg.sender] == address(0x0)){
             user_address = address(new User(_name, _pwd));
             users[msg.sender] = user_address;
+            message = "successs";
+        } else{
+            message = "already exist";
         }
     }
 

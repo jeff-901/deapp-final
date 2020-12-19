@@ -66,7 +66,8 @@ export default function MyAppBar(props) {
               classes={classes.link}
             />
           ) : (
-            <SignUp setSignIn={setSignIn} />
+            <SignUp setSignIn={setSignIn} setOpen={setSignInOpen} createUser={props.methods.addUser}
+            accounts={props.accounts}/>
           )
         ) : (
           <div>

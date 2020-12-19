@@ -21,11 +21,13 @@ function App() {
     const accounts = await web3.eth.getAccounts();
     setAccounts(accounts);
     const networkId = await web3.eth.net.getId();
+    console.log(networkId);
     const deployedNetwork = ServerContract.networks[networkId];
+    console.log(deployedNetwork);
     const server_instance = new web3.eth.Contract(
       ServerContract.abi,
       // deployedNetwork && deployedNetwork.address,
-      ServerContract.networks["1608194219388"]["address"]
+      ServerContract.networks["1608347804216"]["address"]
     );
     setServerContract(server_instance);
   }, [])
@@ -43,7 +45,7 @@ function App() {
         <Switch>
           <Route exact path="/">
             <div className="App">
-              <Main user={user}/>
+              <Main user={user} methods={server_contract.methods} accounts={accounts}/>
             </div>
           </Route>
           <Route exact path="/booking">
