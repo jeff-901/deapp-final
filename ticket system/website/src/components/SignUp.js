@@ -94,10 +94,8 @@ function SignUp(props) {
     } else {
       let result = await props.createUser(username,sha256(password)).send({ from: props.accounts[0] });
       // console.log(result)
-      if (msg === "success") {
+      if (result.msg === "success") {
         props.setSignIn(true);
-        // console.log(address)
-        // props.setUser(address);
       } else {
         // console.log(msg)
         setUsernameHelpText("User create fail!");
