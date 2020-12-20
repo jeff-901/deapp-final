@@ -49,18 +49,17 @@ function Login(props) {
     props.setOpen(false);
   };
 
-  const handleSignIn = (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
-    checkUser(id, sha256(password)).then((result) => {
-      if (result !== 0) {
-        setCorrect(true);
-        props.setUser(result);
-      } else {
-        setPassword("");
-        setCorrect(false);
-      }
-    });
-  };
+    let result = await props.checkUser(id, sha256(password)).send({ from: props.accounts[0] });
+    if (result.success) {
+      setCorrect(true);
+      props.setUser(result.user);
+    } else {
+      setPassword("");
+      setCorrect(false);
+    }
+  }
 
   const body = (
     <div style={modalStyle} className={classes.paper}>

@@ -10,6 +10,11 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import Login from "./Login";
 import SignUp from "./SignUp";
+import IconButton from "@material-ui/core/IconButton";
+import AccountCircle from "@material-ui/icons/AccountCircle";
+import MenuIcon from "@material-ui/icons/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@material-ui/core/Menu";
 
 const useStyles = makeStyles((theme) => ({
     '@global': {
@@ -68,9 +73,11 @@ export default function MyAppBar(props) {
               open={signInOpen}
               setOpen={setSignInOpen}
               classes={classes.link}
+              checkUser={props.methods.checkUser}
             />
           ) : (
-            <SignUp setSignIn={setSignIn} />
+            <SignUp setSignIn={setSignIn} setOpen={setSignInOpen} createUser={props.methods.addUser}
+            accounts={props.accounts}/>
           )
         ) : (
           <div>
@@ -100,7 +107,7 @@ export default function MyAppBar(props) {
               onClose={handleClose}
             >
               <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose} component={Link} to="/mycourses">
+              <MenuItem onClick={handleClose}>
                 My courses
               </MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>

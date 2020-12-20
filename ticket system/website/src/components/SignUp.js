@@ -41,7 +41,7 @@ function SignUp(props) {
   const [modalStyle, setModalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(true);
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("b07901052@ntu.edu.tw");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [validUsername, setValidUsername] = useState(true);
@@ -56,13 +56,14 @@ function SignUp(props) {
   const handleClose = () => {
     setOpen(false);
     props.setSignIn(true);
+    props.setOpen(false);
   };
 
   const handleOpen = () => {
     setOpen(true);
   };
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     if (username.length === 0) {
       setValidUsername(false);
@@ -72,7 +73,7 @@ function SignUp(props) {
       setValidUsername(false);
       setUsername("");
       setUsernameHelpText("Username can only contain at most 14 characters!");
-    } else if (email.search(/^\w ((-\w )|(\.\w ))*\@[A-Za-z0-9] ((\.|-)[A-Za-z0-9] )*\.[A-Za-z0-9] $/) === -1) {
+    } else if (!email.match(/.+[@].+/) === -1) {
       setEmailHelpText("Invalid Email!\nDon't try to hack me!");
       setValidEmail(false);
       setEmail("");
@@ -91,6 +92,7 @@ function SignUp(props) {
       setPassword("");
       setPassword2("");
     } else {
+<<<<<<< HEAD
       createUser({
         name: username,
         id: "1",
@@ -109,6 +111,22 @@ function SignUp(props) {
           setPassword2("");
         }
       });
+=======
+      let result = await props.createUser(username,sha256(password)).send({ from: props.accounts[0] });
+      // console.log(result)
+      if (result.msg === "success") {
+        props.setSignIn(true);
+      } else {
+        // console.log(msg)
+        setUsernameHelpText("User create fail!");
+        setValidUsername(false);
+        setUsername("");
+        setEmail("");
+        setPassword("");
+        setPassword2("");
+      }
+      ;
+>>>>>>> c8371fee59c0e8062de0b89e217ca2df0a02a795
     }
   };
 

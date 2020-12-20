@@ -1,5 +1,5 @@
 // refer to: https://github.com/mui-org/material-ui/tree/master/docs/src/pages/getting-started/templates/album
-import React from 'react';
+import React, { useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -62,13 +62,22 @@ const campaigns = [
     },
 ];
 
-export default function Booking() {
+export default function Booking(props) {
   const classes = useStyles();
+  const campaigns = [];
+  useEffect(()=> {
+    campaigns = props.methods.getCampaigns();
+  })
+  const handleBuy = async () => {
+    if (props.user) {
+      await props.methods.buyTicket(index, 1).send({ from: accounts[0]});
+    }
+  }
 
   return (
     <React.Fragment>
       <CssBaseline />
-      <MyAppBar/>
+      <MyAppBar user={props.user} methods={props.methods} accounts={props.accounts} setUser={props.setUser}/>
       <main>
         {/* Hero unit */}
         <div className={classes.heroContent}>
@@ -104,7 +113,7 @@ export default function Booking() {
                     </Typography>
                   </CardContent>
                   <CardActions >
-                    <Button size="small" color="primary">
+                    <Button size="small" color="primary" onClick={handleBuy}>
                       Book it!
                     </Button>
                   </CardActions>

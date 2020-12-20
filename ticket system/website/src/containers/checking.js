@@ -1,5 +1,5 @@
 // refer to: https://github.com/mui-org/material-ui/tree/master/docs/src/pages/getting-started/templates/album
-import React from 'react';
+import React, { useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -48,9 +48,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function Booking() {
+export default function Booking(props) {
   const classes = useStyles();
-
+  let campaigns;
+  let seats;
+  useEffect(async () => {
+    let result = props.methods.getUserTickets();
+    campaigns = result.campaigns;
+    seats = result.seats;
+  })
   return (
     <React.Fragment>
       <CssBaseline />
