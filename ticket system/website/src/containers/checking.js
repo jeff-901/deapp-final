@@ -48,10 +48,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function Booking(props) {
+export default function Checking(props) {
   const classes = useStyles();
   let campaigns;
   let seats;
+  console.log(props.methods)
   useEffect(async () => {
     let result = props.methods.getUserTickets();
     campaigns = result.campaigns;

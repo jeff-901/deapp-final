@@ -105,9 +105,9 @@ const footers = [
   },
 ];
 
-export default function Pricing(props) {
+export default function Main(props) {
   const classes = useStyles();
-
+  console.log(props.methods)
   return (
     <React.Fragment>
       <CssBaseline />

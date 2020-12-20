@@ -37,9 +37,14 @@ export default function Creating(props) {
         sell_time: "",
         abstraction: ""
     });
+<<<<<<< HEAD
     // console.log(props.accounts)
     // console.log(props.methods.addCampaign)
     const handleCreate = () => {
+=======
+    console.log(props.methods)
+    const handleCreate = async () => {
+>>>>>>> e40905a755554c9ded42fc02bd2be05e700bc87a
       if (props.user&&info.campaign_name&&info.seats&&info.price&&info.start_time&&
         info.end_time&&info.sell_time&&info.abstraction) {
         // let startTime = new Date(info.start_time).getTime();

@@ -4,13 +4,14 @@ import Typography from '@material-ui/core/Typography';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import Login from "./Login";
-import SignUp from "./SignUp";
+import Link from "@material-ui/core/Link";
 import IconButton from "@material-ui/core/IconButton";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import MenuIcon from "@material-ui/icons/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
+import Login from "./Login";
+import SignUp from "./SignUp";
+import AccountCircle from "@material-ui/icons/AccountCircle";
+import MenuIcon from "@material-ui/icons/Menu";
 
 const useStyles = makeStyles((theme) => ({
     '@global': {
@@ -85,7 +86,7 @@ export default function MyAppBar(props) {
               color="inherit"
               edge="end"
             >
-              <AccountCircle />
+              {/* <AccountCircle /> */}
             </IconButton>
             <Menu
               id="menu-appbar"
