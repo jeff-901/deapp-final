@@ -93,7 +93,7 @@ function SignUp(props) {
     } else {
       createUser({
         name: username,
-        id: id,
+        id: "1",
         password: sha256(password),
         sessionId: "123",
         courses: JSON.stringify([]),
