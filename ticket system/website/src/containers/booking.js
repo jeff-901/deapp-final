@@ -64,7 +64,8 @@ const campaigns = [
 
 export default function Booking(props) {
   const classes = useStyles();
-  const campaigns = [];
+  console.log(props.methods)
+  let campaigns = [];
   useEffect(()=> {
     campaigns = props.methods.getCampaigns();
   })

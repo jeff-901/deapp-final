@@ -17,18 +17,22 @@ function App() {
 
   useEffect(async () => {
     const web3 = await getWeb3();
-    setWeb3(web3);
+    
     const accounts = await web3.eth.getAccounts();
-    setAccounts(accounts);
+    
     const networkId = await web3.eth.net.getId();
     // console.log(networkId);
     const deployedNetwork = ServerContract.networks[networkId];
     const server_instance = new web3.eth.Contract(
       ServerContract.abi,
       // deployedNetwork && deployedNetwork.address,
-      // ServerContract.networks["1608369010788"]["address"]
+      // ServerContract.networks["1608452285837"]["address"]
+      "0x45332Cd5e1cDccEB3CC0DF936aF8B5020f40c960"
     );
+    // console.log(server_instance);
     setServerContract(server_instance);
+    setAccounts(accounts);
+    setWeb3(web3);
     // setServerContract({methods:{}});
   }, [])
 
@@ -40,6 +44,7 @@ function App() {
      return <div>Loading Web3, accounts, and contract...</div>;
   }
   else {
+    // console.log(web3)
     return (
       <BrowserRouter>
         <Switch>
@@ -60,7 +65,7 @@ function App() {
           </Route>
           <Route exact path="/checking">
             <div className="App">
-              <Checking/> 
+              <Checking user={user} methods={server_contract.methods} accounts={accounts}/> 
             </div>
           </Route>
         </Switch>

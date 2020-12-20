@@ -37,15 +37,17 @@ export default function Creating(props) {
         sell_time: "",
         abstraction: ""
     });
-
-    const handleCreate = async () => {
+    // console.log(props.accounts)
+    // console.log(props.methods.addCampaign)
+    const handleCreate = () => {
       if (props.user&&info.campaign_name&&info.seats&&info.price&&info.start_time&&
         info.end_time&&info.sell_time&&info.abstraction) {
-        let startTime = new Date(info.start_time).getTime();
-        let endTime = new Date(info.end_time).getTime();
-        let sellTime = new Date(info.sell_time).getTime();
-        await props.methods.addCampaign(info.campaign_name, info.seats, info.price, 
-          startTime, endTime, sellTime, info.abstraction).send({ from: props.accounts[0] });
+        // let startTime = new Date(info.start_time).getTime();
+        // let endTime = new Date(info.end_time).getTime();
+        // let sellTime = new Date(info.sell_time).getTime();
+        let result = props.methods.addCampaign(info.campaign_name, info.seats, info.price, 
+          /*startTime, endTime, sellTime*/1,1,1, info.abstraction).send({ from: props.accounts[0] });
+        console.log(result);
       }
     }
 

@@ -97,7 +97,7 @@ contract Server {
         uint256 _campaign_end_time,
         uint256 _start_sell_time,
         string memory _abstraction
-    ) public {
+    ) public returns (string memory message) {
         if (users[msg.sender] != address(0x0)) {
             address payable campaign_address = address(
                 new Campaign(
@@ -113,6 +113,9 @@ contract Server {
             campaigns.push(server_campaign(campaign_address, true));
             User user = User(users[msg.sender]);
             user.addCampaign(campaign_address);
+            message = "success";
+        } else {
+            message = "fail";
         }
     }
 
@@ -153,6 +156,9 @@ contract Server {
         if (users[msg.sender] != address(0x0)) {
             User currentUser = User(users[msg.sender]);
             (campaigns, seats) = currentUser.ViewTickets();
+        } else {
+            campaigns = new address[](0);
+            seats = new uint256[](0);
         }
     }
 
@@ -317,7 +323,12 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
         emit OnAddTicket(msg.sender, _ticket_address, Id);
     }
 
-    function getPassword() public isOwner returns (string memory password) {
+    function getPassword()
+        public
+        view
+        isOwner
+        returns (string memory password)
+    {
         password = pwd;
     }
 
