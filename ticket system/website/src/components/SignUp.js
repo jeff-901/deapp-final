@@ -92,26 +92,6 @@ function SignUp(props) {
       setPassword("");
       setPassword2("");
     } else {
-<<<<<<< HEAD
-      createUser({
-        name: username,
-        id: "1",
-        password: sha256(password),
-        sessionId: "123",
-        courses: JSON.stringify([]),
-      }).then((msg) => {
-        if (msg === "success") {
-          props.setSignIn(true);
-        } else {
-          setUsernameHelpText("User create fail!");
-          setValidUsername(false);
-          setUsername("");
-          setEmail("");
-          setPassword("");
-          setPassword2("");
-        }
-      });
-=======
       let result = await props.createUser(username,sha256(password)).send({ from: props.accounts[0] });
       // console.log(result)
       if (result.msg === "success") {
@@ -126,7 +106,6 @@ function SignUp(props) {
         setPassword2("");
       }
       ;
->>>>>>> c8371fee59c0e8062de0b89e217ca2df0a02a795
     }
   };
 

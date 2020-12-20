@@ -64,13 +64,15 @@ const campaigns = [
 
 export default function Booking(props) {
   const classes = useStyles();
-  const campaigns = [];
+  let campaigns = [];
+  console.log(props)
   useEffect(()=> {
     campaigns = props.methods.getCampaigns();
   })
-  const handleBuy = async () => {
+  const handleBuy = async (index) => {
     if (props.user) {
-      await props.methods.buyTicket(index, 1).send({ from: accounts[0]});
+      await props.methods.buyTicket(index, 1).send({ from: props.accounts[0]});
+      // console.log("todo");
     }
   }
 
@@ -113,7 +115,7 @@ export default function Booking(props) {
                     </Typography>
                   </CardContent>
                   <CardActions >
-                    <Button size="small" color="primary" onClick={handleBuy}>
+                    <Button size="small" color="primary" onClick={handleBuy=>(1)}>
                       Book it!
                     </Button>
                   </CardActions>

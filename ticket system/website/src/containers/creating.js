@@ -37,7 +37,7 @@ export default function Creating(props) {
         sell_time: "",
         abstraction: ""
     });
-
+    console.log(props.methods)
     const handleCreate = async () => {
       if (props.user&&info.campaign_name&&info.seats&&info.price&&info.start_time&&
         info.end_time&&info.sell_time&&info.abstraction) {
