@@ -1,5 +1,5 @@
 // refer to: https://github.com/mui-org/material-ui/tree/master/docs/src/pages/getting-started/templates/album
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -51,32 +51,41 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const campaigns = [
-    {
-        campaign_name: 'NTU Basketball Cup',
-        abstraction: 'A game EE will definitely win the champion',
-        price: 'FREE',
-        start_time: "2020/12/18",
-        end_time: "2021/1/1",
-        sell_time: "2020/12/18"
-    },
-];
+// const campaigns = [
+//     {
+//         campaign_name: 'NTU Basketball Cup',
+//         abstraction: 'A game EE will definitely win the champion',
+//         price: 'FREE',
+//         start_time: "2020/12/18",
+//         end_time: "2021/1/1",
+//         sell_time: "2020/12/18"
+//     },
+// ];
 
 export default function Booking(props) {
   const classes = useStyles();
-  let campaigns = [];
-  console.log(props)
-  useEffect(()=> {
-    campaigns = props.methods.getCampaigns();
-  })
+  const [campaigns, setCampaigns] = useState(null);
+  const init = async ()=>{
+    let result = await props.methods.getCampaigns().send({ from: props.accounts[0] });
+    result = result.events.OnGetCampaigns.returnValues;
+    setCampaigns(result[0]);
+  }
+  init()
   const handleBuy = async (index) => {
     if (props.user) {
-      await props.methods.buyTicket(index, 1).send({ from: props.accounts[0]});
+      let result = await props.methods.buyTicket(index, 1).send({ from: props.accounts[0]});
       // console.log("todo");
+      result = result.events.OnBuyTicket.returnValues;
+      if (result[0]==="success"){
+        alert("success");
+      } else {
+        alert("fail");
+      }
     }
   }
 
   return (
+    
     <React.Fragment>
       <CssBaseline />
       <MyAppBar user={props.user} methods={props.methods} accounts={props.accounts} setUser={props.setUser}/>
@@ -94,6 +103,7 @@ export default function Booking(props) {
         </div>
         <Container className={classes.cardGrid} maxWidth="md">
           {/* End hero unit */}
+          {campaigns?
           <Grid container spacing={4}>
             {campaigns.map((campaign) => (
               <Grid item key={campaign} xs={12} sm={6} md={4}>
@@ -122,7 +132,8 @@ export default function Booking(props) {
                 </Card>
               </Grid>
             ))}
-          </Grid>
+          </Grid>:<h1>Loading</h1>
+        }
         </Container>
       </main>
       {/* Footer */}

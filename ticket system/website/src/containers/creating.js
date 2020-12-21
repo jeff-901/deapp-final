@@ -37,16 +37,26 @@ export default function Creating(props) {
         sell_time: "",
         abstraction: ""
     });
-    console.log(props.methods)
+    // x
     const handleCreate = async () => {
+      // console.log("create")
+        // console.log(props.methods.addCampaign)
+      console.log("user: ",props.user)
       if (props.user&&info.campaign_name&&info.seats&&info.price&&info.start_time&&
         info.end_time&&info.sell_time&&info.abstraction) {
+          // console.log("enter")
         // let startTime = new Date(info.start_time).getTime();
         // let endTime = new Date(info.end_time).getTime();
         // let sellTime = new Date(info.sell_time).getTime();
-        let result = props.methods.addCampaign(info.campaign_name, info.seats, info.price, 
-          /*startTime, endTime, sellTime*/1,1,1, info.abstraction).send({ from: props.accounts[0] });
-        console.log(result);
+        let result = await props.methods.addCampaign(info.campaign_name, 1, 1,/*info.seats, info.price, startTime, endTime, sellTime*/1,1,1, info.abstraction).send({ from: props.accounts[0] });
+        // console.log(result);
+        result = result.events.OnAddCampaign.returnValues;
+        // console.log(result);
+        if (result[0]==="success"){
+          alert("success");
+        } else {
+          alert("error");
+        }
       }
     }
 
@@ -170,12 +180,12 @@ export default function Creating(props) {
                 </Grid>
               </Grid>
               <Button
-                type="submit"
+                // type="submit"
                 fullWidth
                 variant="contained"
                 color="primary"
                 className={classes.submit}
-                onClick={handleCreate}
+                onClick={() => {handleCreate()}}
               >
                 Create Now!
               </Button>

@@ -80,10 +80,23 @@ contract Server {
         address payable campaign;
         bool isvalid;
     }
+    event OnAddUser(string message, address user_address);
+    event OnGetCampaigns(Campaign[] campaigns);
+    event OnAddCampaign(string message);
+    event OnBuyTicket(string message);
 
     server_campaign[] public campaigns;
     uint256 ptr = 0;
     mapping(address => address) private users;
+    modifier validUser() {
+        require(users[msg.sender] != address(0x0));
+        _;
+    }
+
+    modifier validSignup() {
+        require(users[msg.sender] == address(0x0));
+        _;
+    }
 
     function callServer(string memory i) public pure returns (string memory) {
         return (i);
@@ -97,19 +110,21 @@ contract Server {
         uint256 _campaign_end_time,
         uint256 _start_sell_time,
         string memory _abstraction
-    ) public returns (string memory message) {
+    ) public validUser {
+        string memory message;
         if (users[msg.sender] != address(0x0)) {
-            address payable campaign_address = address(
-                new Campaign(
-                    _campaign_name,
-                    _seats,
-                    _price,
-                    _campaign_start_time,
-                    _campaign_end_time,
-                    _start_sell_time,
-                    _abstraction
-                )
-            );
+            address payable campaign_address =
+                address(
+                    new Campaign(
+                        _campaign_name,
+                        _seats,
+                        _price,
+                        _campaign_start_time,
+                        _campaign_end_time,
+                        _start_sell_time,
+                        _abstraction
+                    )
+                );
             campaigns.push(server_campaign(campaign_address, true));
             User user = User(users[msg.sender]);
             user.addCampaign(campaign_address);
@@ -117,12 +132,15 @@ contract Server {
         } else {
             message = "fail";
         }
+        emit OnAddCampaign(message);
     }
 
     function addUser(string memory _name, string memory _pwd)
         public
-        returns (string memory message, address user_address)
+        validSignup
     {
+        string memory message;
+        address user_address;
         if (users[msg.sender] == address(0x0)) {
             user_address = address(new User(_name, _pwd));
             users[msg.sender] = user_address;
@@ -130,10 +148,13 @@ contract Server {
         } else {
             message = "already exist";
         }
+        emit OnAddUser(message, user_address);
     }
 
     function checkUser(string memory _name, string memory _password)
         public
+        view
+        validUser
         returns (bool success, address user)
     {
         if (users[msg.sender] != address(0x0)) {
@@ -144,13 +165,18 @@ contract Server {
                 keccak256(abi.encodePacked(_name)) &&
                 keccak256(abi.encodePacked(password)) ==
                 keccak256(abi.encodePacked(_password)));
-            user = users[msg.sender];
+            if (success) {
+                user = users[msg.sender];
+            } else {
+                user = address(0);
+            }
         }
     }
 
     function getUserTickets()
         public
         view
+        validUser
         returns (address[] memory campaigns, uint256[] memory seats)
     {
         if (users[msg.sender] != address(0x0)) {
@@ -165,6 +191,7 @@ contract Server {
     function getUserCampaigns()
         public
         view
+        validUser
         returns (Campaign[] memory campaigns)
     {
         if (users[msg.sender] != address(0x0)) {
@@ -179,7 +206,7 @@ contract Server {
         }
     }
 
-    function getCampaigns() public returns (Campaign[] memory) {
+    function getCampaigns() public {
         uint256 j = ptr;
         uint256 k = 0;
         Campaign[] memory c = new Campaign[](campaigns.length);
@@ -200,23 +227,32 @@ contract Server {
             }
         }
         ptr = j;
-        return c;
+        emit OnGetCampaigns(c);
     }
 
-    function buyTicket(uint256 index, uint256 amount) public payable {
+    function buyTicket(uint256 index, uint256 amount) public payable validUser {
         uint256[] memory seat_num;
+        string memory message;
         if (users[msg.sender] != address(0x0)) {
             User user = User(users[msg.sender]);
             if (campaigns[index].isvalid) {
                 Campaign c = Campaign(campaigns[index].campaign);
                 if (c.remain() >= amount) {
                     seat_num = c.buy(msg.sender, amount);
+                } else {
+                    message = "fail";
+                    emit OnBuyTicket(message);
                 }
+            } else {
+                message = "fail";
+                emit OnBuyTicket(message);
             }
             for (uint256 i = 0; i < seat_num.length; i++) {
                 user.addTicket(campaigns[index].campaign, seat_num[i]);
             }
+            message = "success";
         }
+        emit OnBuyTicket(message);
     }
 
     receive() external payable {}
@@ -299,11 +335,8 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
     }
 
     function addCampaign(address payable _campaign_address) public {
-        OwnCampaign memory campaign = OwnCampaign(
-            _campaign_address,
-            true,
-            false
-        );
+        OwnCampaign memory campaign =
+            OwnCampaign(_campaign_address, true, false);
         own_campaigns.push(campaign);
         uint256 Id = own_campaigns.length - 1;
 
@@ -311,12 +344,8 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
     }
 
     function addTicket(address _ticket_address, uint256 seatId) public {
-        OwnTicket memory ticket = OwnTicket(
-            _ticket_address,
-            true,
-            false,
-            seatId
-        );
+        OwnTicket memory ticket =
+            OwnTicket(_ticket_address, true, false, seatId);
         own_tickets.push(ticket);
         uint256 Id = own_tickets.length - 1;
 

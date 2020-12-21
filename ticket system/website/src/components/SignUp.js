@@ -12,7 +12,7 @@ import Button from "@material-ui/core/Button";
 import sha256 from "../Mysha256.js";
 
 
-let createUser = ()=>{}
+
 function getModalStyle() {
   const top = 50;
   const left = 50;
@@ -93,7 +93,8 @@ function SignUp(props) {
       setPassword2("");
     } else {
       let result = await props.createUser(username,sha256(password)).send({ from: props.accounts[0] });
-      // console.log(result)
+      result = result.events.OnAddUser.returnValues;
+      console.log(result);
       if (result.msg === "success") {
         props.setSignIn(true);
       } else {

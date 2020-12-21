@@ -14,7 +14,7 @@ function App() {
   const [accounts, setAccounts] = useState(null);
   const [server_contract, setServerContract] = useState({methods:{}});
   // const [server_contract, setServerContract] = useState(null);
-  const [user, setUser] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(async () => {
     const web3 = await getWeb3();
@@ -30,7 +30,8 @@ function App() {
       // 0xD5087e00cC0338AbD7d421dF86FB88cE0155d201
       // 0x5dd794Cf643694454E4a4Fe870432D95792452E2
       // 0xf95c89c7bf95d040a8e98b8b86eb43d0097fe67e
-      ServerContract.networks["1608347804216"]["address"]
+      // ServerContract.networks["1608347804216"]["address"]
+      "0x47c88334651F4d2148cD48135f523C36f4b9Dc16"
     );
     // console.log(server_instance);
     setServerContract(server_instance);
@@ -53,8 +54,8 @@ function App() {
 
     // console.log(accounts.length)
     // console.log(server_contract.methods)
-    console.log(user)
-    console.log(server_contract.methods)
+    console.log("app user: ",user)
+    // console.log(server_contract.methods)
 
     return (
       <BrowserRouter>
