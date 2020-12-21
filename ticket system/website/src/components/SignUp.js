@@ -95,7 +95,7 @@ function SignUp(props) {
       let result = await props.createUser(username,sha256(password)).send({ from: props.accounts[0] });
       result = result.events.OnAddUser.returnValues;
       console.log(result);
-      if (result.msg === "success") {
+      if (result.message === "success") {
         props.setSignIn(true);
       } else {
         // console.log(msg)

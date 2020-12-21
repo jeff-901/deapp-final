@@ -80,14 +80,26 @@ contract Server {
         address payable campaign;
         bool isvalid;
     }
+
+    struct return_campaign {
+        address _campaign_address;
+        string _campaign_name;
+        uint256 _seats;
+        uint256 _price;
+        uint256 _campaign_start_time;
+        uint256 _campaign_end_time;
+        uint256 _start_sell_time;
+        string _abstraction;
+    }
     event OnAddUser(string message, address user_address);
-    event OnGetCampaigns(Campaign[] campaigns);
+    event OnGetCampaigns(address payable[] campaigns);
     event OnAddCampaign(string message);
     event OnBuyTicket(string message);
 
     server_campaign[] public campaigns;
     uint256 ptr = 0;
     mapping(address => address) private users;
+    // mapping(address => return_campaign) public CampaignStruct;
     modifier validUser() {
         require(users[msg.sender] != address(0x0));
         _;
@@ -173,6 +185,28 @@ contract Server {
         }
     }
 
+    function viewCampaign(address payable campaign_address)
+        public
+        returns (
+            uint256 seats,
+            string memory campaign_name,
+            uint256 price,
+            uint256 campaign_start_time,
+            uint256 campaign_end_time,
+            uint256 start_sell_time,
+            string memory abstraction
+        )
+    {
+        Campaign currentCampaign = Campaign(campaign_address);
+        campaign_name = currentCampaign.campaign_name();
+        seats = currentCampaign.seats();
+        price = currentCampaign.price();
+        campaign_start_time = currentCampaign.campaign_start_time();
+        campaign_end_time = currentCampaign.campaign_end_time();
+        start_sell_time = currentCampaign.start_sell_time();
+        abstraction = currentCampaign.abstraction();
+    }
+
     function getUserTickets()
         public
         view
@@ -192,7 +226,7 @@ contract Server {
         public
         view
         validUser
-        returns (Campaign[] memory campaigns)
+        returns (address[] memory campaigns)
     {
         if (users[msg.sender] != address(0x0)) {
             User currentUser = User(users[msg.sender]);
@@ -209,7 +243,7 @@ contract Server {
     function getCampaigns() public {
         uint256 j = ptr;
         uint256 k = 0;
-        Campaign[] memory c = new Campaign[](campaigns.length);
+        address payable[] memory c = new address payable[](campaigns.length);
         for (uint256 i = ptr; i < campaigns.length; i++) {
             if (campaigns[i].isvalid) {
                 if (
@@ -221,7 +255,7 @@ contract Server {
                         j += 1;
                     }
                 } else {
-                    c[k] = (Campaign(campaigns[i].campaign));
+                    c[k] = (campaigns[i].campaign);
                     k++;
                 }
             }
@@ -361,7 +395,7 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
         password = pwd;
     }
 
-    function ViewCampaigns() public view returns (Campaign[] memory) {
+    function ViewCampaigns() public view returns (address[] memory) {
         uint256 len = 0;
         uint256[] memory count_to_id = new uint256[](own_campaigns.length);
         for (uint256 id = 0; id < own_campaigns.length; id++) {
@@ -370,11 +404,9 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
                 len++;
             }
         }
-        Campaign[] memory campaignList = new Campaign[](len);
+        address[] memory campaignList = new address[](len);
         for (uint256 i = 0; i < len; i++) {
-            campaignList[i] = Campaign(
-                own_campaigns[count_to_id[i]].campaign_address
-            );
+            campaignList[i] = own_campaigns[count_to_id[i]].campaign_address;
         }
         return campaignList;
     }

@@ -68,12 +68,18 @@ export default function Booking(props) {
   const init = async ()=>{
     let result = await props.methods.getCampaigns().send({ from: props.accounts[0] });
     result = result.events.OnGetCampaigns.returnValues;
-    setCampaigns(result[0]);
+    let c = [];
+    console.log(result[0])
+    for (let i = 0; i < result[0].length; i++){
+      c.push(await props.methods.viewCampaign(result[0][i]).call({ from: props.accounts[0] }))
+    }
+    console.log(c)
+    setCampaigns(c);
   }
   init()
   const handleBuy = async (index) => {
     if (props.user) {
-      let result = await props.methods.buyTicket(index, 1).send({ from: props.accounts[0]});
+      let result = await props.methods.buyTicket(index, 1).send({ from: props.accounts[0] });
       // console.log("todo");
       result = result.events.OnBuyTicket.returnValues;
       if (result[0]==="success"){
@@ -105,7 +111,9 @@ export default function Booking(props) {
           {/* End hero unit */}
           {campaigns?
           <Grid container spacing={4}>
-            {campaigns.map((campaign) => (
+            {campaigns.map( (campaign, index) => (
+              
+              
               <Grid item key={campaign} xs={12} sm={6} md={4}>
                 <Card className={classes.card}>
                   <CardMedia
@@ -121,11 +129,11 @@ export default function Booking(props) {
                       {campaign.abstraction}
                     </Typography>
                     <Typography>
-                      Available: {campaign.start_time} ~ {campaign.end_time}
+                      Available: {campaign.campaign_start_time} ~ {campaign.campaign_end_time}
                     </Typography>
                   </CardContent>
                   <CardActions >
-                    <Button size="small" color="primary" onClick={handleBuy=>(1)}>
+                    <Button size="small" color="primary" onClick={()=>{handleBuy(index)}}>
                       Book it!
                     </Button>
                   </CardActions>

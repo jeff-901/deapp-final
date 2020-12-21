@@ -14,7 +14,7 @@ function App() {
   const [accounts, setAccounts] = useState(null);
   const [server_contract, setServerContract] = useState({methods:{}});
   // const [server_contract, setServerContract] = useState(null);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(false);
 
   useEffect(async () => {
     const web3 = await getWeb3();
@@ -26,12 +26,12 @@ function App() {
     const deployedNetwork = ServerContract.networks[networkId];
     const server_instance = new web3.eth.Contract(
       ServerContract.abi,
-      // deployedNetwork && deployedNetwork.address,
+      deployedNetwork && deployedNetwork.address,
       // 0xD5087e00cC0338AbD7d421dF86FB88cE0155d201
       // 0x5dd794Cf643694454E4a4Fe870432D95792452E2
       // 0xf95c89c7bf95d040a8e98b8b86eb43d0097fe67e
       // ServerContract.networks["1608347804216"]["address"]
-      "0x47c88334651F4d2148cD48135f523C36f4b9Dc16"
+      // "0x47c88334651F4d2148cD48135f523C36f4b9Dc16"
     );
     // console.log(server_instance);
     setServerContract(server_instance);
