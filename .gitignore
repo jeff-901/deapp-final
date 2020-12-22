@@ -2,4 +2,6 @@ node_modules
 .secret
 /website/truffle.js
 /unused
-/website/build
+build
+truffle.js
+truffle-config.js

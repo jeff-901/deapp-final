@@ -81,9 +81,34 @@ contract Server {
         bool isvalid;
     }
 
+    struct return_campaign {
+        address _campaign_address;
+        string _campaign_name;
+        uint256 _seats;
+        uint256 _price;
+        uint256 _campaign_start_time;
+        uint256 _campaign_end_time;
+        uint256 _start_sell_time;
+        string _abstraction;
+    }
+    event OnAddUser(string message, address user_address);
+    event OnGetCampaigns(address payable[] campaigns);
+    event OnAddCampaign(string message);
+    event OnBuyTicket(string message);
+
     server_campaign[] public campaigns;
     uint256 ptr = 0;
     mapping(address => address) private users;
+    // mapping(address => return_campaign) public CampaignStruct;
+    modifier validUser() {
+        require(users[msg.sender] != address(0x0));
+        _;
+    }
+
+    modifier validSignup() {
+        require(users[msg.sender] == address(0x0));
+        _;
+    }
 
     function callServer(string memory i) public pure returns (string memory) {
         return (i);
@@ -97,29 +122,37 @@ contract Server {
         uint256 _campaign_end_time,
         uint256 _start_sell_time,
         string memory _abstraction
-    ) public {
+    ) public validUser {
+        string memory message;
         if (users[msg.sender] != address(0x0)) {
-            address payable campaign_address = address(
-                new Campaign(
-                    _campaign_name,
-                    _seats,
-                    _price,
-                    _campaign_start_time,
-                    _campaign_end_time,
-                    _start_sell_time,
-                    _abstraction
-                )
-            );
+            address payable campaign_address =
+                address(
+                    new Campaign(
+                        _campaign_name,
+                        _seats,
+                        _price,
+                        _campaign_start_time,
+                        _campaign_end_time,
+                        _start_sell_time,
+                        _abstraction
+                    )
+                );
             campaigns.push(server_campaign(campaign_address, true));
             User user = User(users[msg.sender]);
             user.addCampaign(campaign_address);
+            message = "success";
+        } else {
+            message = "fail";
         }
+        emit OnAddCampaign(message);
     }
 
     function addUser(string memory _name, string memory _pwd)
         public
-        returns (string memory message, address user_address)
+        validSignup
     {
+        string memory message;
+        address user_address;
         if (users[msg.sender] == address(0x0)) {
             user_address = address(new User(_name, _pwd));
             users[msg.sender] = user_address;
@@ -127,10 +160,13 @@ contract Server {
         } else {
             message = "already exist";
         }
+        emit OnAddUser(message, user_address);
     }
 
     function checkUser(string memory _name, string memory _password)
         public
+        view
+        validUser
         returns (bool success, address user)
     {
         if (users[msg.sender] != address(0x0)) {
@@ -141,25 +177,56 @@ contract Server {
                 keccak256(abi.encodePacked(_name)) &&
                 keccak256(abi.encodePacked(password)) ==
                 keccak256(abi.encodePacked(_password)));
-            user = users[msg.sender];
+            if (success) {
+                user = users[msg.sender];
+            } else {
+                user = address(0);
+            }
         }
+    }
+
+    function viewCampaign(address payable campaign_address)
+        public
+        returns (
+            uint256 seats,
+            string memory campaign_name,
+            uint256 price,
+            uint256 campaign_start_time,
+            uint256 campaign_end_time,
+            uint256 start_sell_time,
+            string memory abstraction
+        )
+    {
+        Campaign currentCampaign = Campaign(campaign_address);
+        campaign_name = currentCampaign.campaign_name();
+        seats = currentCampaign.seats();
+        price = currentCampaign.price();
+        campaign_start_time = currentCampaign.campaign_start_time();
+        campaign_end_time = currentCampaign.campaign_end_time();
+        start_sell_time = currentCampaign.start_sell_time();
+        abstraction = currentCampaign.abstraction();
     }
 
     function getUserTickets()
         public
         view
+        validUser
         returns (address[] memory campaigns, uint256[] memory seats)
     {
         if (users[msg.sender] != address(0x0)) {
             User currentUser = User(users[msg.sender]);
             (campaigns, seats) = currentUser.ViewTickets();
+        } else {
+            campaigns = new address[](0);
+            seats = new uint256[](0);
         }
     }
 
     function getUserCampaigns()
         public
         view
-        returns (Campaign[] memory campaigns)
+        validUser
+        returns (address[] memory campaigns)
     {
         if (users[msg.sender] != address(0x0)) {
             User currentUser = User(users[msg.sender]);
@@ -173,10 +240,10 @@ contract Server {
         }
     }
 
-    function getCampaigns() public returns (Campaign[] memory) {
+    function getCampaigns() public {
         uint256 j = ptr;
         uint256 k = 0;
-        Campaign[] memory c = new Campaign[](campaigns.length);
+        address payable[] memory c = new address payable[](campaigns.length);
         for (uint256 i = ptr; i < campaigns.length; i++) {
             if (campaigns[i].isvalid) {
                 if (
@@ -188,29 +255,38 @@ contract Server {
                         j += 1;
                     }
                 } else {
-                    c[k] = (Campaign(campaigns[i].campaign));
+                    c[k] = (campaigns[i].campaign);
                     k++;
                 }
             }
         }
         ptr = j;
-        return c;
+        emit OnGetCampaigns(c);
     }
 
-    function buyTicket(uint256 index, uint256 amount) public payable {
+    function buyTicket(uint256 index, uint256 amount) public payable validUser {
         uint256[] memory seat_num;
+        string memory message;
         if (users[msg.sender] != address(0x0)) {
             User user = User(users[msg.sender]);
             if (campaigns[index].isvalid) {
                 Campaign c = Campaign(campaigns[index].campaign);
                 if (c.remain() >= amount) {
                     seat_num = c.buy(msg.sender, amount);
+                } else {
+                    message = "fail";
+                    emit OnBuyTicket(message);
                 }
+            } else {
+                message = "fail";
+                emit OnBuyTicket(message);
             }
             for (uint256 i = 0; i < seat_num.length; i++) {
                 user.addTicket(campaigns[index].campaign, seat_num[i]);
             }
+            message = "success";
         }
+        emit OnBuyTicket(message);
     }
 
     receive() external payable {}
@@ -293,11 +369,8 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
     }
 
     function addCampaign(address payable _campaign_address) public {
-        OwnCampaign memory campaign = OwnCampaign(
-            _campaign_address,
-            true,
-            false
-        );
+        OwnCampaign memory campaign =
+            OwnCampaign(_campaign_address, true, false);
         own_campaigns.push(campaign);
         uint256 Id = own_campaigns.length - 1;
 
@@ -305,23 +378,24 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
     }
 
     function addTicket(address _ticket_address, uint256 seatId) public {
-        OwnTicket memory ticket = OwnTicket(
-            _ticket_address,
-            true,
-            false,
-            seatId
-        );
+        OwnTicket memory ticket =
+            OwnTicket(_ticket_address, true, false, seatId);
         own_tickets.push(ticket);
         uint256 Id = own_tickets.length - 1;
 
         emit OnAddTicket(msg.sender, _ticket_address, Id);
     }
 
-    function getPassword() public isOwner returns (string memory password) {
+    function getPassword()
+        public
+        view
+        isOwner
+        returns (string memory password)
+    {
         password = pwd;
     }
 
-    function ViewCampaigns() public view returns (Campaign[] memory) {
+    function ViewCampaigns() public view returns (address[] memory) {
         uint256 len = 0;
         uint256[] memory count_to_id = new uint256[](own_campaigns.length);
         for (uint256 id = 0; id < own_campaigns.length; id++) {
@@ -330,11 +404,9 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
                 len++;
             }
         }
-        Campaign[] memory campaignList = new Campaign[](len);
+        address[] memory campaignList = new address[](len);
         for (uint256 i = 0; i < len; i++) {
-            campaignList[i] = Campaign(
-                own_campaigns[count_to_id[i]].campaign_address
-            );
+            campaignList[i] = own_campaigns[count_to_id[i]].campaign_address;
         }
         return campaignList;
     }

@@ -10,12 +10,13 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
+// import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import Copyright from '../components/copyright'
-import MyAppBar from '../components/myapppbar'
+import MyAppBar from '../components/myapppbar';
+import {Link} from "react-router-dom"
 
 
 const useStyles = makeStyles((theme) => ({
@@ -107,7 +108,7 @@ const footers = [
 
 export default function Main(props) {
   const classes = useStyles();
-  console.log(props.methods)
+  // console.log(props.methods)
   return (
     <React.Fragment>
       <CssBaseline />
@@ -145,7 +146,7 @@ export default function Main(props) {
                   </ul>
                 </CardContent>
                 <CardActions>
-                  <Button fullWidth variant={tier.buttonVariant} color="primary" href={tier.link}>
+                  <Button fullWidth variant={tier.buttonVariant} color="primary" component={Link} to={tier.link}>
                     {tier.buttonText}
                   </Button>
                 </CardActions>

@@ -52,11 +52,14 @@ export default function Checking(props) {
   const classes = useStyles();
   let campaigns;
   let seats;
-  console.log(props.methods)
+  let campaigns_address;
   useEffect(async () => {
-    let result = props.methods.getUserTickets();
-    campaigns = result.campaigns;
+    let result = await props.methods.getUserTickets().call({ from: props.accounts[0] });
+    console.log(result)
+    campaigns_address = result.campaigns;
     seats = result.seats;
+    campaigns = await props.methods.getUserCampaigns().call({ from: props.accounts[0] });
+    console.log("campaign: ", campaigns)
   })
   return (
     <React.Fragment>

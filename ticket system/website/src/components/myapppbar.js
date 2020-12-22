@@ -55,6 +55,7 @@ export default function MyAppBar(props) {
       setAnchorEl(null);
       props.setUser(false);
     };
+    // console.log(props.user)
     return (
         <AppBar position="static" color="default" elevation={0} className={classes.appBar}>
         <Toolbar className={classes.toolbar}>
@@ -71,6 +72,7 @@ export default function MyAppBar(props) {
               setOpen={setSignInOpen}
               classes={classes.link}
               checkUser={props.methods.checkUser}
+              accounts={props.accounts}
             />
           ) : (
             <SignUp setSignIn={setSignIn} setOpen={setSignInOpen} createUser={props.methods.addUser}
@@ -86,7 +88,7 @@ export default function MyAppBar(props) {
               color="inherit"
               edge="end"
             >
-              {/* <AccountCircle /> */}
+              <AccountCircle />
             </IconButton>
             <Menu
               id="menu-appbar"

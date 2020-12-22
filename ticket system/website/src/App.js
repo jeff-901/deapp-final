@@ -26,12 +26,14 @@ function App() {
     const deployedNetwork = ServerContract.networks[networkId];
     const server_instance = new web3.eth.Contract(
       ServerContract.abi,
-      // deployedNetwork && deployedNetwork.address,
+      deployedNetwork && deployedNetwork.address,
       // 0xD5087e00cC0338AbD7d421dF86FB88cE0155d201
       // 0x5dd794Cf643694454E4a4Fe870432D95792452E2
       // 0xf95c89c7bf95d040a8e98b8b86eb43d0097fe67e
-      ServerContract.networks["1608347804216"]["address"]
+      // ServerContract.networks["1608347804216"]["address"]
+      // "0x47c88334651F4d2148cD48135f523C36f4b9Dc16"
     );
+    // console.log(server_instance);
     setServerContract(server_instance);
     setWeb3(web3);
     setAccounts(accounts);
@@ -48,10 +50,13 @@ function App() {
      return <div>Loading Web3, accounts, and contract...</div>;
   }
   else {
+
+
     // console.log(accounts.length)
     // console.log(server_contract.methods)
-    console.log(user)
-    console.log(server_contract.methods)
+    console.log("app user: ",user)
+    // console.log(server_contract.methods)
+
     return (
       <BrowserRouter>
         <Switch>
@@ -73,7 +78,7 @@ function App() {
           </Route>
           <Route exact path="/checking">
             <div className="App">
-              <Checking/> 
+              <Checking user={user} methods={server_contract.methods} accounts={accounts}/> 
             </div>
           </Route>
         </Switch>

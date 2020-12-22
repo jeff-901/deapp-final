@@ -51,10 +51,14 @@ function Login(props) {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    let result = await props.checkUser(id, sha256(password)).send({ from: props.accounts[0] });
+    let result = await props.checkUser(id, sha256(password)).call({ from: props.accounts[0] })
+    // console.log(result)
+    // console.log(result.receipt);
     if (result.success) {
       setCorrect(true);
+      // console.log(result.user)
       props.setUser(result.user);
+      props.setOpen(false);
     } else {
       setPassword("");
       setCorrect(false);
