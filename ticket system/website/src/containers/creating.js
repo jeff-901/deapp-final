@@ -3,64 +3,89 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Container from '@material-ui/core/Container';
-import Box from '@material-ui/core/Box';
-import Copyright from '../components/copyright';
-import ReturnMain from '../components/returnmain'
+import Button from "@material-ui/core/Button";
+import Grid from "@material-ui/core/Grid";
+import Container from "@material-ui/core/Container";
+import Box from "@material-ui/core/Box";
+import Copyright from "../components/copyright";
+import ReturnMain from "../components/returnmain";
+import { Redirect } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
-    paper: {
-      marginTop: theme.spacing(8),
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-    },
-    form: {
-      width: '100%', // Fix IE 11 issue.
-      marginTop: theme.spacing(3),
-    },
-    submit: {
-      margin: theme.spacing(3, 0, 2),
-    },
-  }));
+  paper: {
+    marginTop: theme.spacing(8),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  form: {
+    width: "100%", // Fix IE 11 issue.
+    marginTop: theme.spacing(3),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+}));
 
 export default function Creating(props) {
-    const classes = useStyles();
-    const [info, setInfo] = useState({
-        campaign_name: "NTU Basketball Cup",
-        seats: 0,
-        price: 0,
-        start_time: "",
-        end_time: "",
-        sell_time: "",
-        abstraction: ""
-    });
-    // x
-    const handleCreate = async () => {
-      // console.log("create")
-        // console.log(props.methods.addCampaign)
-      console.log("user: ",props.user)
-      if (props.user&&info.campaign_name&&info.seats&&info.price&&info.start_time&&
-        info.end_time&&info.sell_time&&info.abstraction) {
-          // console.log("enter")
-        // let startTime = new Date(info.start_time).getTime();
-        // let endTime = new Date(info.end_time).getTime();
-        // let sellTime = new Date(info.sell_time).getTime();
-        let result = await props.methods.addCampaign(info.campaign_name, 1, 1,/*info.seats, info.price, startTime, endTime, sellTime*/1,1,1, info.abstraction).send({ from: props.accounts[0] });
-        // console.log(result);
-        result = result.events.OnAddCampaign.returnValues;
-        // console.log(result);
-        if (result[0]==="success"){
-          alert("success");
-        } else {
-          alert("error");
-        }
+  const classes = useStyles();
+  const [redirect, setRedirect] = useState(null);
+  const [info, setInfo] = useState({
+    campaign_name: "NTU Basketball Cup",
+    seats: 0,
+    price: 0,
+    start_time: "",
+    end_time: "",
+    sell_time: "",
+    abstraction: "",
+  });
+  // x
+  const handleCreate = async () => {
+    // console.log("create")
+    // console.log(props.methods.addCampaign)
+    console.log("user: ", props.user);
+    if (
+      props.user &&
+      info.campaign_name &&
+      info.seats &&
+      info.price &&
+      info.start_time &&
+      info.end_time &&
+      info.sell_time &&
+      info.abstraction
+    ) {
+      // console.log("enter")
+      // let startTime = new Date(info.start_time).getTime();
+      // let endTime = new Date(info.end_time).getTime();
+      // let sellTime = new Date(info.sell_time).getTime();
+      let result = await props.methods
+        .addCampaign(
+          info.campaign_name,
+          1,
+          1,
+          /*info.seats, info.price, startTime, endTime, sellTime*/ 1,
+          1,
+          1,
+          info.abstraction
+        )
+        .send({ from: props.accounts[0] });
+      // console.log(result);
+      result = result.events.OnAddCampaign.returnValues;
+      // console.log(result);
+      if (result[0] === "success") {
+        alert("success");
+        setRedirect(true);
+      } else {
+        alert("error");
       }
     }
+  };
 
-    return (
+  return (
+    <>
+      {redirect === true ? (
+        <Redirect to="/" />
+      ) : (
         <Container component="main" maxWidth="xs">
           {/* <CssBaseline /> */}
           <div className={classes.paper}>
@@ -78,10 +103,10 @@ export default function Creating(props) {
                     label="Campaign Name"
                     // value={info["campaign_name"]}
                     onChange={(e) => {
-                        setInfo((info) => ({
+                      setInfo((info) => ({
                         ...info,
                         ["campaign_name"]: e.target.value,
-                        }));
+                      }));
                     }}
                     autoFocus
                   />
@@ -94,10 +119,10 @@ export default function Creating(props) {
                     id="price"
                     label="Price"
                     onChange={(e) => {
-                        setInfo((info) => ({
+                      setInfo((info) => ({
                         ...info,
                         ["price"]: e.target.value,
-                        }));
+                      }));
                     }}
                   />
                 </Grid>
@@ -109,10 +134,10 @@ export default function Creating(props) {
                     id="seats"
                     label="Seats"
                     onChange={(e) => {
-                        setInfo((info) => ({
+                      setInfo((info) => ({
                         ...info,
                         ["seats"]: e.target.value,
-                        }));
+                      }));
                     }}
                   />
                 </Grid>
@@ -124,10 +149,10 @@ export default function Creating(props) {
                     id="startTime"
                     label="Start Time"
                     onChange={(e) => {
-                        setInfo((info) => ({
+                      setInfo((info) => ({
                         ...info,
                         ["start_time"]: e.target.value,
-                        }));
+                      }));
                     }}
                   />
                 </Grid>
@@ -139,10 +164,10 @@ export default function Creating(props) {
                     id="endTime"
                     label="End Time"
                     onChange={(e) => {
-                        setInfo((info) => ({
+                      setInfo((info) => ({
                         ...info,
                         ["end_time"]: e.target.value,
-                        }));
+                      }));
                     }}
                   />
                 </Grid>
@@ -154,10 +179,10 @@ export default function Creating(props) {
                     id="sellTime"
                     label="Sell Time"
                     onChange={(e) => {
-                        setInfo((info) => ({
+                      setInfo((info) => ({
                         ...info,
                         ["sell_time"]: e.target.value,
-                        }));
+                      }));
                     }}
                   />
                 </Grid>
@@ -171,10 +196,10 @@ export default function Creating(props) {
                     label="Abstraction"
                     id="abstraction"
                     onChange={(e) => {
-                        setInfo((info) => ({
+                      setInfo((info) => ({
                         ...info,
                         ["abstraction"]: e.target.value,
-                        }));
+                      }));
                     }}
                   />
                 </Grid>
@@ -185,7 +210,9 @@ export default function Creating(props) {
                 variant="contained"
                 color="primary"
                 className={classes.submit}
-                onClick={() => {handleCreate()}}
+                onClick={() => {
+                  handleCreate();
+                }}
               >
                 Create Now!
               </Button>
@@ -196,5 +223,7 @@ export default function Creating(props) {
             <Copyright />
           </Box>
         </Container>
-      );
+      )}
+    </>
+  );
 }

@@ -44,7 +44,7 @@ contract Campaign {
         _;
     }
 
-    function buy(address buyer, uint256 amount)
+    function buy(uint256 amount)//address buyer, 
         public
         payable
         returns (uint256[] memory seat_num)
@@ -56,8 +56,8 @@ contract Campaign {
             while (j < amount) {
                 address temp = seat_owner[uint256(i)];
                 if (temp == address(0x00) && remain >= amount) {
-                    seat_owner[i] = buyer;
-                    // buyer.transfer(price);
+                    seat_owner[i] = msg.sender;
+                    msg.sender.transfer(price);
                     remain--;
                     seat_num[j] = i;
                     j++;
@@ -272,7 +272,7 @@ contract Server {
             if (campaigns[index].isvalid) {
                 Campaign c = Campaign(campaigns[index].campaign);
                 if (c.remain() >= amount) {
-                    seat_num = c.buy(msg.sender, amount);
+                    seat_num = c.buy(amount);
                 } else {
                     message = "fail";
                     emit OnBuyTicket(message);
