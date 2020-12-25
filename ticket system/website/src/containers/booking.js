@@ -17,6 +17,7 @@ import Copyright from "../components/copyright";
 import ReturnMain from "../components/returnmain";
 import { CardHeader } from "@material-ui/core";
 import MyAppBar from "../components/myapppbar";
+import BookModal from "../components/BookModal";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -64,40 +65,46 @@ const useStyles = makeStyles((theme) => ({
 export default function Booking(props) {
   const classes = useStyles();
   const [campaigns, setCampaigns] = useState(null);
+  const [open, setOpen] = useState(false);
   const init = async () => {
     let result = await props.methods
       .getCampaigns()
-      .send({ from: props.accounts[0] });
-    result = result.events.OnGetCampaigns.returnValues;
+      .call({ from: props.accounts[0] });
+    // console.log(result);
+
     let c = [];
-    console.log(result[0]);
-    for (let i = 0; i < result[0].length; i++) {
-      c.push(
-        await props.methods
-          .viewCampaign(result[0][i])
-          .call({ from: props.accounts[0] })
-      );
+    if (result === undefined || result === []) {
+      setCampaigns([]);
+    } else {
+      // console.log(result[0]);
+      for (let i = 0; i < result.length; i++) {
+        c.push(
+          await props.methods
+            .viewCampaign(result[i])
+            .call({ from: props.accounts[0] })
+        );
+        c[i]["address"] = result[i];
+      }
+      // console.log(c);
     }
-    console.log(c);
     setCampaigns(c);
   };
   // init()
-  useEffect(() => {
-    init();
-  });
-  const handleBuy = async (index) => {
-    if (props.user) {
-      let result = await props.methods
-        .buyTicket(index, 1)
-        .send({ from: props.accounts[0] });
-      // console.log("todo");
-      result = result.events.OnBuyTicket.returnValues;
-      if (result[0] === "success") {
-        alert("success");
-      } else {
-        alert("fail");
-      }
-    }
+
+  init();
+
+  const handleBuy = () => {
+    setOpen(true);
+    // console.log("open");
+    // let result = await props.methods
+    //   .buyTicket(address, 1)
+    //   .send({ from: props.accounts[0] });
+    // result = result.events.OnBuyTicket.returnValues;
+    // if (result[0] === "success") {
+    //   alert("success");
+    // } else {
+    //   alert("fail");
+    // }
   };
 
   return (
@@ -159,18 +166,23 @@ export default function Booking(props) {
                         size="small"
                         color="primary"
                         onClick={() => {
-                          handleBuy(index);
+                          handleBuy(campaign.address);
                         }}
                       >
                         Book it!
                       </Button>
+                      <BookModal
+                        open={open}
+                        setOpen={setOpen}
+                        campaign={campaign}
+                      />
                     </CardActions>
                   </Card>
                 </Grid>
               ))}
             </Grid>
           ) : (
-            <h1>Loading</h1>
+            <h1>Loading or No campaign yet</h1>
           )}
         </Container>
       </main>

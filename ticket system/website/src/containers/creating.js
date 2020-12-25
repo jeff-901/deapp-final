@@ -62,9 +62,10 @@ export default function Creating(props) {
         .addCampaign(
           info.campaign_name,
           1,
-          1,
-          /*info.seats, info.price, startTime, endTime, sellTime*/ 1,
-          1,
+          [1],
+          [1],
+          /*info.levels, info.seats, info.price, startTime, endTime, sellTime*/ 1,
+          1000000000000000,
           1,
           info.abstraction
         )
