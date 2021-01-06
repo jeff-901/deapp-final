@@ -1,6 +1,6 @@
 // refer to: https://github.com/mui-org/material-ui/tree/master/docs/src/pages/getting-started/templates/sign-up
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { withStyles, makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
@@ -11,6 +11,9 @@ import Copyright from "./copyright";
 import ReturnMain from "./returnmain";
 import { Redirect } from "react-router-dom";
 import Modal from "@material-ui/core/Modal";
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -26,6 +29,33 @@ function getModalStyle() {
     transform: `translate(-${top}%, -${left}%)`,
   };
 }
+
+const styles = (theme) => ({
+    root: {
+      margin: 0,
+      padding: theme.spacing(2),
+    },
+    closeButton: {
+      position: 'absolute',
+      right: theme.spacing(1),
+      top: theme.spacing(1),
+      color: theme.palette.grey[500],
+    },
+  });
+
+  const MyTitle = withStyles(styles)((props) => {
+    const { children, classes, onClose, ...other } = props;
+    return (
+      <MuiDialogTitle disableTypography className={classes.root} {...other}>
+        <Typography variant="h6">{children}</Typography>
+        {onClose ? (
+          <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+        ) : null}
+      </MuiDialogTitle>
+    );
+  });
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -97,17 +127,18 @@ export default function BookModal(props) {
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography component="h1" variant="h5" className={classes.title}>
+              <MyTitle id="customized-dialog-title" onClose={handleClose}>{props.campaign.campaign_name}</MyTitle>
+              {/* <Typography component="h1" variant="h5" className={classes.title}>
                 {props.campaign.campaign_name}
-              </Typography>
+              </Typography> */}
             </Grid>
             <Grid item xs={12}>
               <Typography component="h4" variant="h5" className={classes.time}>
                 Campaign Time: <br />
-                <pre>
+                
                   {"  "}
                   {start_time.toDateString()} ~ {end_time.toDateString()}
-                </pre>
+                
               </Typography>
             </Grid>
             <Grid item xs={12}>
@@ -123,17 +154,7 @@ export default function BookModal(props) {
                 Price: {props.campaign.price}
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  handleClose();
-                }}
-              >
-                Cancel
-              </Button>
-            </Grid>
+           
             <Grid item xs={12} sm={6}>
               <Button
                 // type="submit"
