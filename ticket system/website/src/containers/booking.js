@@ -66,31 +66,8 @@ export default function Booking(props) {
   const classes = useStyles();
   const [campaigns, setCampaigns] = useState(null);
   const [open, setOpen] = useState(false);
-  // const init = async () => {
-  //   let result = await props.methods
-  //     .getCampaigns()
-  //     .call({ from: props.accounts[0] });
-  //   // console.log(result);
-
-  //   let c = [];
-  //   if (result === undefined || result === []) {
-  //     setCampaigns([]);
-  //   } else {
-  //     // console.log(result[0]);
-  //     for (let i = 0; i < result.length; i++) {
-  //       c.push(
-  //         await props.methods
-  //           .viewCampaign(result[i])
-  //           .call({ from: props.accounts[0] })
-  //       );
-  //       c[i]["address"] = result[i];
-  //     }
-  //     // console.log(c);
-  //   }
-  //   setCampaigns(c);
-  // };
-  // init()
   useEffect(async () => {
+    console.log("fetch data");
     let result = await props.methods
       .getCampaigns()
       .call({ from: props.accounts[0] });
@@ -113,7 +90,7 @@ export default function Booking(props) {
       // console.log(c);
     }
     setCampaigns(c);
-  });
+  }, [open]);
   // init();
 
   const handleBuy = () => {
