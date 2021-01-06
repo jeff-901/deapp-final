@@ -65,7 +65,7 @@ export default function Creating(props) {
           [1],
           [1],
           /*info.levels, info.seats, info.price, startTime, endTime, sellTime*/ 1,
-          1000000000000000,
+          10000000000,
           1,
           info.abstraction
         )

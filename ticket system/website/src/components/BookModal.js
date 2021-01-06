@@ -17,8 +17,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 function getModalStyle() {
-  const top = 25;
-  const left = 40;
+  const top = 30;
+  const left = 43;
 
   return {
     top: `${top}%`,
@@ -47,6 +47,17 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  select: {
+    minWidth: 120,
+    width: "100%",
+  },
+  title: {
+    textAlign: "center",
+  },
+  time: {
+    // textAlign: "center",
+    fontSize: 15,
+  },
 }));
 
 export default function BookModal(props) {
@@ -65,7 +76,10 @@ export default function BookModal(props) {
   const handleAmountChange = (index) => {
     setAmount(Number(index));
   };
-  // console.log(props.open);
+  // console.log(props.campaign);
+
+  let start_time = new Date(Number(props.campaign.campaign_start_time));
+  let end_time = new Date(Number(props.campaign.campaign_end_time));
   return (
     <Modal
       open={props.open}
@@ -74,100 +88,69 @@ export default function BookModal(props) {
       aria-describedby="simple-modal-description"
     >
       <div className={classes.paper} style={modalStyle}>
-        <Typography component="h1" variant="h5">
+        {/* <Typography component="h1" variant="h5">
           {props.campaign.campaign_name}
-        </Typography>
+        </Typography> */}
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <InputLabel id="demo-simple-select-label">Price</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={level}
-                onChange={(e) => handleLevelChange(e.target.value)}
-              >
-                {props.campaign.price.map((ele, i) => {
-                  return <MenuItem value={i}>{ele}</MenuItem>;
-                })}
-              </Select>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <InputLabel id="demo-simple-select-label">Amount</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={amount}
-                onChange={(e) => handleAmountChange(e.target.value)}
-              >
-                {options.map((ele) => {
-                  return <MenuItem value={ele}>{ele}</MenuItem>;
-                })}
-              </Select>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="startTime"
-                label="Start Time"
-                onChange={(e) => {
-                  setInfo((info) => ({
-                    ...info,
-                    ["start_time"]: e.target.value,
-                  }));
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="endTime"
-                label="End Time"
-                onChange={(e) => {
-                  setInfo((info) => ({
-                    ...info,
-                    ["end_time"]: e.target.value,
-                  }));
-                }}
-              />
+            <Grid item xs={12}>
+              <Typography component="h1" variant="h5" className={classes.title}>
+                {props.campaign.campaign_name}
+              </Typography>
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="sellTime"
-                label="Sell Time"
-                onChange={(e) => {
-                  setInfo((info) => ({
-                    ...info,
-                    ["sell_time"]: e.target.value,
-                  }));
-                }}
-              />
+              <Typography component="h4" variant="h5" className={classes.time}>
+                Campaign Time: <br />
+                <pre>
+                  {"  "}
+                  {start_time.toDateString()} ~ {end_time.toDateString()}
+                </pre>
+              </Typography>
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                multiline
-                rows={4}
-                label="Abstraction"
-                id="abstraction"
-                onChange={(e) => {
-                  setInfo((info) => ({
-                    ...info,
-                    ["abstraction"]: e.target.value,
-                  }));
-                }}
-              />
+              <Typography component="h4" variant="h5" className={classes.time}>
+                Abstraction: <br />
+                {"  "}
+                {props.campaign.abstraction}
+              </Typography>
             </Grid>
             <Grid item xs={6}>
+              <FormControl className={classes.select}>
+                <InputLabel id="demo-simple-select-label">Price</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={level}
+                  onChange={(e) => handleLevelChange(e.target.value)}
+                  // style={{ minWidth: "120" }}
+                >
+                  {props.campaign.price.map((ele, i) => {
+                    return <MenuItem value={ele}>{ele}</MenuItem>;
+                  })}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl className={classes.select}>
+                <InputLabel id="demo-simple-select-label">Amount</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={amount}
+                  onChange={(e) => handleAmountChange(e.target.value)}
+                >
+                  {options.map((ele) => {
+                    return <MenuItem value={ele}>{ele}</MenuItem>;
+                  })}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography component="p" variant="h5" className={classes.time}>
+                Total cost: {amount * level}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <Button
                 variant="contained"
                 color="primary"
@@ -178,7 +161,7 @@ export default function BookModal(props) {
                 Cancel
               </Button>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <Button
                 // type="submit"
                 variant="contained"
@@ -188,7 +171,7 @@ export default function BookModal(props) {
                   handleBuy();
                 }}
               >
-                Confirm buy!
+                Confirm buy
               </Button>
             </Grid>
           </Grid>
