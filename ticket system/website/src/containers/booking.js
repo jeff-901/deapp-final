@@ -93,18 +93,8 @@ export default function Booking(props) {
   }, [open]);
   // init();
 
-  const handleBuy = () => {
+  const handleBookIt = () => {
     setOpen(true);
-    // console.log("open");
-    // let result = await props.methods
-    //   .buyTicket(address, 1)
-    //   .send({ from: props.accounts[0] });
-    // result = result.events.OnBuyTicket.returnValues;
-    // if (result[0] === "success") {
-    //   alert("success");
-    // } else {
-    //   alert("fail");
-    // }
   };
 
   return (
@@ -166,7 +156,7 @@ export default function Booking(props) {
                         size="small"
                         color="primary"
                         onClick={() => {
-                          handleBuy(campaign.address);
+                          handleBookIt();
                         }}
                       >
                         Book it!

@@ -45,7 +45,10 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(5),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
+    margin: theme.spacing(1, 1, 2, 8),
+  },
+  cancel: {
+    margin: theme.spacing(1, 0, 2, 1),
   },
   select: {
     minWidth: 120,
@@ -57,6 +60,24 @@ const useStyles = makeStyles((theme) => ({
   time: {
     // textAlign: "center",
     fontSize: 15,
+  },
+  abstraction: {
+    // textAlign: "center",
+    fontSize: 15,
+  },
+  total: {
+    textAlign: "center",
+    fontSize: 20,
+  },
+  buttonGrid: {
+    alignItems: "flex-end",
+    alignContent: "flex-end",
+    justify: "center",
+  },
+  gridContainer: {
+    alignItems: "flex-end",
+    alignContent: "flex-end",
+    justify: "center",
   },
 }));
 
@@ -76,6 +97,9 @@ export default function BookModal(props) {
   const handleAmountChange = (index) => {
     setAmount(Number(index));
   };
+  const handleBuy = () => {
+    props.setOpen(false);
+  };
   // console.log(props.campaign);
 
   let start_time = new Date(Number(props.campaign.campaign_start_time));
@@ -92,23 +116,26 @@ export default function BookModal(props) {
           {props.campaign.campaign_name}
         </Typography> */}
         <form className={classes.form} noValidate>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} className={classes.gridContainer}>
             <Grid item xs={12}>
               <Typography component="h1" variant="h5" className={classes.title}>
                 {props.campaign.campaign_name}
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography component="h4" variant="h5" className={classes.time}>
+              <Typography component="p" variant="h5" className={classes.time}>
                 Campaign Time: <br />
-                <pre>
-                  {"  "}
-                  {start_time.toDateString()} ~ {end_time.toDateString()}
-                </pre>
+                {/* <p style={{ textIndent: "20" }}> */}
+                {start_time.toDateString()} ~ {end_time.toDateString()}
+                {/* </p> */}
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography component="h4" variant="h5" className={classes.time}>
+              <Typography
+                component="p"
+                variant="h5"
+                className={classes.abstraction}
+              >
                 Abstraction: <br />
                 {"  "}
                 {props.campaign.abstraction}
@@ -146,22 +173,12 @@ export default function BookModal(props) {
               </FormControl>
             </Grid>
             <Grid item xs={12}>
-              <Typography component="p" variant="h5" className={classes.time}>
+              <Typography component="p" variant="h5" className={classes.total}>
                 Total cost: {amount * level}
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  handleClose();
-                }}
-              >
-                Cancel
-              </Button>
-            </Grid>
-            <Grid item xs={12} sm={6}>
+
+            <Grid item xs={12} className={classes.buttonGrid}>
               <Button
                 // type="submit"
                 variant="contained"
@@ -172,6 +189,16 @@ export default function BookModal(props) {
                 }}
               >
                 Confirm buy
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.cancel}
+                onClick={() => {
+                  handleClose();
+                }}
+              >
+                Cancel
               </Button>
             </Grid>
           </Grid>
