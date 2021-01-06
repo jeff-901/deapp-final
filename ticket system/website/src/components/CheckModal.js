@@ -81,8 +81,8 @@ export default function BookModal(props) {
   };
   // console.log(props.campaign);
 
-  let start_time = new Date(Number(props.campaign.campaign_start_time));
-  let end_time = new Date(Number(props.campaign.campaign_end_time));
+  let start_time = new Date(props.campaign.campaign_start_time);
+  let end_time = new Date(props.campaign.campaign_end_time);
   return (
     <Modal
       open={props.open}
@@ -117,40 +117,10 @@ export default function BookModal(props) {
                 {props.campaign.abstraction}
               </Typography>
             </Grid>
-            <Grid item xs={6}>
-              <FormControl className={classes.select}>
-                <InputLabel id="demo-simple-select-label">Price</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={level}
-                  onChange={(e) => handleLevelChange(e.target.value)}
-                  // style={{ minWidth: "120" }}
-                >
-                  {props.campaign.price.map((ele, i) => {
-                    return <MenuItem value={ele}>{ele}</MenuItem>;
-                  })}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl className={classes.select}>
-                <InputLabel id="demo-simple-select-label">Amount</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={amount}
-                  onChange={(e) => handleAmountChange(e.target.value)}
-                >
-                  {options.map((ele) => {
-                    return <MenuItem value={ele}>{ele}</MenuItem>;
-                  })}
-                </Select>
-              </FormControl>
-            </Grid>
+            
             <Grid item xs={12}>
               <Typography component="p" variant="h5" className={classes.time}>
-                Total cost: {amount * level}
+                Price: {props.campaign.price}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -174,7 +144,7 @@ export default function BookModal(props) {
                   handleBuy();
                 }}
               >
-                Confirm buy
+                Confirm refund
               </Button>
             </Grid>
           </Grid>
