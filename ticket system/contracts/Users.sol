@@ -15,8 +15,8 @@ contract Users {
         address user_addr;
         string name;
         string pwd;
-        uint256 private amount_tickets;
-        uint256 private amount_campaigns;
+        uint256 amount_tickets;
+        uint256 amount_campaigns;
         OwnTicket[] tickets;
         OwnCampaign[] campaigns;
         mapping(address => uint256) campaign_addr_to_id;
@@ -49,7 +49,7 @@ contract Users {
         _;
     }
 
-    modifier isvalidSignup(address user_addr) {
+    modifier isValidSignup(address user_addr) {
         require(usr_addr_valid[user_addr], "Already exists");
         _;
     }
@@ -72,7 +72,7 @@ contract Users {
         return addr_to_U[user_addr].campaigns[_campaignId].isValid;
     }
 
-    modifier isValidTicket(address user_addr, uint256 _ticketId) 
+    function isValidTicket(address user_addr, uint256 _ticketId) 
         public 
         view 
         returns(bool)      
@@ -80,16 +80,16 @@ contract Users {
         return addr_to_U[user_addr].tickets[_ticketId].isValid;
     }
 
-    function addUser(address user_addr, string memory _name, string momory _pwd)
+    function addUser(address user_addr, string memory _name, string memory _pwd)
         public
         isValidSignup(user_addr)
     {
-        User storage user;
+        User storage user = addr_to_U[user_addr];
         user.user_addr = user_addr;
-        user.pwd = pwd;
+        user.name = _name;
+        user.pwd = _pwd;
         user.amount_tickets = 0;
         user.amount_campaigns = 0;
-        addr_to_U[user_addr] = user;
 
         usr_addr_valid[user_addr] = true;
     }
@@ -130,7 +130,7 @@ contract Users {
         isUserValid(user_addr)
         returns (string memory)
     {
-        password = pwd;
+        return addr_to_U[user_addr].pwd;
     }
 
     function ViewCampaigns(address user_addr) 
@@ -141,7 +141,6 @@ contract Users {
     {
         uint256 len = 0;
         uint256[] memory count_to_id = new uint256[](addr_to_U[user_addr].amount_campaigns);
-        uint 
         for (uint256 id = 0; id < addr_to_U[user_addr].amount_campaigns; id++) {
             if (isValidCampaign(user_addr, id)) {
                 count_to_id[len] = id;
