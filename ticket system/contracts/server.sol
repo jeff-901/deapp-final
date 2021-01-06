@@ -228,13 +228,13 @@ contract Server {
         public
         view
         validUser
-        returns (address[] memory campaigns, uint256[] memory seats)
+        returns (address[] memory u_campaigns, uint256[] memory seats)
     {
         if (users[msg.sender] != address(0x0)) {
             User currentUser = User(users[msg.sender]);
-            (campaigns, seats) = currentUser.ViewTickets();
+            (u_campaigns, seats) = currentUser.ViewTickets();
         } else {
-            campaigns = new address[](0);
+            u_campaigns = new address[](0);
             seats = new uint256[](0);
         }
     }
@@ -243,11 +243,11 @@ contract Server {
         public
         view
         validUser
-        returns (address[] memory campaigns)
+        returns (address[] memory u_campaigns)
     {
         if (users[msg.sender] != address(0x0)) {
             User currentUser = User(users[msg.sender]);
-            campaigns = currentUser.ViewCampaigns();
+            u_campaigns = currentUser.ViewCampaigns();
         }
     }
 
@@ -376,7 +376,7 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
         view
         returns (bool isValid)
     {
-        return own_campaigns[_ticketId].isValid;
+        return own_tickets[_ticketId].isValid;
     }
 
     function addCampaign(address payable _campaign_address) public {
@@ -425,7 +425,7 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
     function ViewTickets()
         public
         view
-        returns (address[] memory campaigns, uint256[] memory seats)
+        returns (address[] memory u_campaigns, uint256[] memory seats)
     {
         uint256 len = 0;
         uint256[] memory count_to_id = new uint256[](own_tickets.length);
@@ -435,10 +435,10 @@ Also, traverse all seat_owners of this campaign, for all the seat_owners(user), 
                 len++;
             }
         }
-        campaigns = new address[](len);
+        u_campaigns = new address[](len);
         seats = new uint256[](len);
         for (uint256 i = 0; i < len; i++) {
-            campaigns[i] = own_tickets[count_to_id[i]].attend_address;
+            u_campaigns[i] = own_tickets[count_to_id[i]].attend_address;
             seats[i] = own_tickets[count_to_id[i]].seat;
         }
     }
