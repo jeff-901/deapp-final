@@ -109,7 +109,7 @@ export default function BookModal(props) {
       )
       .send({
         from: props.accounts[0],
-        value: web3.toWei(amount * level, "gwei"),
+        value: web3.toWei(amount * level, "ether"),
       });
     result = result.events.OnBuyTicket.returnValues;
     alert(result.message);

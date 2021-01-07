@@ -70,7 +70,7 @@ contract Campaign {
                 if (temp == address(0x00) && remain[level] >= amount) {
                     seat_owner[i] = msg.sender;
                     // address(this).call{value: price[level]}("");
-                    address(this).transfer(price[level]);
+                    address(this).transfer(price[level] ether);
                     remain[level]--;
                     seat_num[j] = i;
                     j++;
