@@ -97,7 +97,22 @@ export default function BookModal(props) {
   const handleAmountChange = (index) => {
     setAmount(Number(index));
   };
-  const handleBuy = () => {
+  const handleBuy = async () => {
+    // console.log(props.campaign.address);
+    // console.log(props.campaign.price.findIndex((ele) => ele == level));
+    // console.log(amount);
+    let result = await props.methods
+      .buyTicket(
+        props.campaign.address,
+        amount,
+        props.campaign.price.findIndex((ele) => ele == level)
+      )
+      .send({
+        from: props.accounts[0],
+        value: web3.toWei(amount * level, "gwei"),
+      });
+    result = result.events.OnBuyTicket.returnValues;
+    alert(result.message);
     props.setOpen(false);
   };
   // console.log(props.campaign);

@@ -45,7 +45,6 @@ export default function Creating(props) {
     // console.log(props.methods.addCampaign)
     console.log("user: ", props.user);
     if (
-      props.user &&
       info.campaign_name &&
       info.seats &&
       info.price &&
@@ -62,8 +61,8 @@ export default function Creating(props) {
         .addCampaign(
           info.campaign_name,
           1,
-          [1],
-          [1],
+          [10],
+          [10 ** 7],
           /*info.levels, info.seats, info.price, startTime, endTime, sellTime*/ 1,
           10000000000,
           1,

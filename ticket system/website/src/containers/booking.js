@@ -165,6 +165,8 @@ export default function Booking(props) {
                         open={open}
                         setOpen={setOpen}
                         campaign={campaign}
+                        methods={props.methods}
+                        accounts={props.accounts}
                       />
                     </CardActions>
                   </Card>
