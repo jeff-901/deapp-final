@@ -16,6 +16,8 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
+import Web3 from "web3";
+
 function getModalStyle() {
   const top = 30;
   const left = 43;
@@ -97,13 +99,28 @@ export default function BookModal(props) {
   const handleAmountChange = (index) => {
     setAmount(Number(index));
   };
-  const handleBuy = () => {
+  const handleBuy = async () => {
+    // console.log(props.campaign.address);
+    // console.log(props.campaign.price.findIndex((ele) => ele == level));
+    // console.log(amount);
+    let result = await props.methods
+      .buyTicket(
+        props.campaign.address,
+        amount,
+        props.campaign.price.findIndex((ele) => ele == level)
+      )
+      .send({
+        from: props.accounts[0],
+        value: amount * level,
+      });
+    result = result.events.OnBuyTicket.returnValues;
+    alert(result.message);
     props.setOpen(false);
   };
   // console.log(props.campaign);
 
-  let start_time = new Date(Number(props.campaign.campaign_start_time));
-  let end_time = new Date(Number(props.campaign.campaign_end_time));
+  let start_time = new Date(Number(props.campaign.campaign_start_time * 1000)); //change second to millisecond
+  let end_time = new Date(Number(props.campaign.campaign_end_time * 1000));
   return (
     <Modal
       open={props.open}
@@ -152,7 +169,8 @@ export default function BookModal(props) {
                   // style={{ minWidth: "120" }}
                 >
                   {props.campaign.price.map((ele, i) => {
-                    return <MenuItem value={ele}>{ele}</MenuItem>;
+                    let ele_ether = Web3.utils.fromWei(String(ele), "ether");
+                    return <MenuItem value={ele}>{ele_ether}</MenuItem>;
                   })}
                 </Select>
               </FormControl>
@@ -174,7 +192,8 @@ export default function BookModal(props) {
             </Grid>
             <Grid item xs={12}>
               <Typography component="p" variant="h5" className={classes.total}>
-                Total cost: {amount * level}
+                Total cost:{" "}
+                {Web3.utils.fromWei(String(amount * level), "ether")}
               </Typography>
             </Grid>
 
