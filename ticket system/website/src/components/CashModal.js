@@ -157,6 +157,18 @@ export default function BookModal(props) {
                 Price: {props.campaign.price}
               </Typography>
             </Grid>
+
+            <Grid item xs={12}>
+              <Typography component="p" variant="h5" className={classes.time}>
+                Amount: 10
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Typography component="p" variant="h5" className={classes.time}>
+                Total Amount: {props.campaign.price*10}
+              </Typography>
+            </Grid>
            
             <Grid item xs={12} sm={6}>
               <Button
@@ -168,7 +180,7 @@ export default function BookModal(props) {
                   handleBuy();
                 }}
               >
-                Confirm refund
+                Take money
               </Button>
             </Grid>
           </Grid>
