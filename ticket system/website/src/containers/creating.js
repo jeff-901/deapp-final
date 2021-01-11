@@ -10,6 +10,7 @@ import Box from "@material-ui/core/Box";
 import Copyright from "../components/copyright";
 import ReturnMain from "../components/returnmain";
 import { Redirect } from "react-router-dom";
+import Web3 from "web3";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -43,7 +44,7 @@ export default function Creating(props) {
   const handleCreate = async () => {
     // console.log("create")
     // console.log(props.methods.addCampaign)
-    console.log("user: ", props.user);
+    // console.log("user: ", props.user);
     if (
       info.campaign_name &&
       info.seats &&
@@ -57,14 +58,16 @@ export default function Creating(props) {
       // let startTime = new Date(info.start_time).getTime();
       // let endTime = new Date(info.end_time).getTime();
       // let sellTime = new Date(info.sell_time).getTime();
+      let wei = Web3.utils.toWei("0.5", "ether");
+      let wei2 = Web3.utils.toWei("0.1", "ether");
       let result = await props.methods
         .addCampaign(
           info.campaign_name,
-          1,
-          [10],
-          [10 ** 7],
+          2,
+          [10, 20],
+          [wei, wei2],
           /*info.levels, info.seats, info.price, startTime, endTime, sellTime*/ 1,
-          10000000000,
+          5000000000,
           1,
           info.abstraction
         )

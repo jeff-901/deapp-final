@@ -71,7 +71,7 @@ export default function Booking(props) {
     let result = await props.methods
       .getCampaigns()
       .call({ from: props.accounts[0] });
-    // console.log(result);
+    console.log(result);
 
     let c = [];
     if (result === undefined || result === []) {

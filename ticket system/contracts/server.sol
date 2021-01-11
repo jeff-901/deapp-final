@@ -73,12 +73,12 @@ contract Campaign {
                 num += i;
                 address temp = seat_owner[num];
                 if (temp == address(0x00) && remain[level] >= amount) {
-                    seat_owner[i] = msg.sender;
+                    seat_owner[num] = msg.sender;
                     // address(this).call{value: price[level]}("");
                     // uint256 cost = (price[level]);
-                    address(this).transfer(price[level] * (10**18));
+                    address(this).transfer(price[level]);
                     remain[level]--;
-                    seat_num[j] = i;
+                    seat_num[j] = num;
                     j++;
                 }
             }
@@ -94,9 +94,9 @@ contract Campaign {
 
     function refund(uint256 level, uint256 seat_num) public {
         if (block.timestamp < campaign_end_time) {
-            // msg.sender.call{value: address(this).balance}("");
             if (seat_owner[seat_num]!=address(0x0)){
                 seat_owner[seat_num]=address(0x0);
+                // msg.sender.call{value: price[level]}("");
                 msg.sender.transfer(price[level]);
             }
             
@@ -304,13 +304,10 @@ contract Server {
     function buyTicket(address payable campaign_address, uint256 amount, uint256 level) public payable  {
         uint256[] memory seat_num;
         string memory message;
-        
         Users users = Users(users_address);
-        
-        
         Campaign c = Campaign(campaign_address);
         if (c.remain(level) >= amount) {
-            seat_num = c.buy(amount, level);
+            seat_num = c.buy{value: msg.value}(amount, level);
         } else {
             message = "fail";
             emit OnBuyTicket(message);
