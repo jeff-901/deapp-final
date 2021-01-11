@@ -66,11 +66,17 @@ contract Campaign {
         seat_num = new uint256[](amount);
         for (uint256 i = 0; i < seats[level]; i++) {
             if (j < amount) {
-                address temp = seat_owner[i];
+                uint256 num = 0;
+                for (int256 k = 0; k < int(level); k++ ){
+                    num = num + seats[uint256(k)];
+                }
+                num += i;
+                address temp = seat_owner[num];
                 if (temp == address(0x00) && remain[level] >= amount) {
                     seat_owner[i] = msg.sender;
                     // address(this).call{value: price[level]}("");
-                    address(this).transfer(price[level] ether);
+                    // uint256 cost = (price[level]);
+                    address(this).transfer(price[level] * (10**18));
                     remain[level]--;
                     seat_num[j] = i;
                     j++;
@@ -81,7 +87,19 @@ contract Campaign {
 
     function withdraw() public restricted {
         if (block.timestamp > campaign_end_time) {
-            msg.sender.call{value: address(this).balance}("");
+            // msg.sender.call{value: address(this).balance}("");
+            msg.sender.transfer(address(this).balance);
+        }
+    }
+
+    function refund(uint256 level, uint256 seat_num) public {
+        if (block.timestamp < campaign_end_time) {
+            // msg.sender.call{value: address(this).balance}("");
+            if (seat_owner[seat_num]!=address(0x0)){
+                seat_owner[seat_num]=address(0x0);
+                msg.sender.transfer(price[level]);
+            }
+            
         }
     }
 
@@ -305,6 +323,19 @@ contract Server {
         emit OnBuyTicket(message);
     }
 
+    function withdraw(address payable campaign_address) public {
+        Campaign(campaign_address).withdraw(); 
+    }
+
+    function completeTicket(address payable campaign_address, uint256 level, uint256 seat_num) public {
+        Campaign(campaign_address).withdraw(); 
+    }
+
+    function refund(address payable campaign_address, uint256 level, uint256 seat_num) public {
+        Campaign(campaign_address).refund(level, seat_num); 
+        Users(users_address).RefundTicket(campaign_address, level, seat_num);
+    }
+
     receive() external payable {}
 }
 
@@ -314,7 +345,8 @@ contract Users {
     event OnAddCampaign(address capmaign_addr, uint256 Id);
     event OnAddTicket(address attend_addr, uint256 Id);
     event OnCompleteCampaign(address capmaign_addr, uint256 Id);
-    event OnCompleteTicket(address attend_addr, uint256 Id);
+    event OnCompleteTicket(string message);
+    event OnRefundTicket(string message);
 
     mapping (address => User) addr_to_U;
     mapping (address => bool) usr_addr_valid;
@@ -492,10 +524,35 @@ contract Users {
         addr_to_U[msg.sender].campaigns[_id].isEnd = true;
     }
 
-    function CompleteTicket(address _ticket_address) public 
+    function CompleteTicket(address _ticket_address, uint256 _level, uint256 _seat_num) public 
     {
-        uint256 _id = addr_to_U[msg.sender].ticket_addr_to_id[_ticket_address];
-        addr_to_U[msg.sender].tickets[_id].isValid = false;
-        addr_to_U[msg.sender].tickets[_id].isEnd = true;
+        for (uint256 id = 0; id < addr_to_U[msg.sender].amount_tickets; id++) {
+            if (isValidTicket(id)) {
+                if (addr_to_U[msg.sender].tickets[id].attend_address == _ticket_address &&
+                    addr_to_U[msg.sender].tickets[id].level == _level &&
+                    addr_to_U[msg.sender].tickets[id].seat == _seat_num){
+                        addr_to_U[msg.sender].tickets[id].isValid = false;
+                        addr_to_U[msg.sender].tickets[id].isEnd = true;
+                        emit OnCompleteTicket("success");
+                    }
+            }
+        }
+        emit OnCompleteTicket("can't not find ticket");
+    }
+
+    function RefundTicket(address _ticket_address, uint256 _level, uint256 _seat_num) public 
+    {
+        for (uint256 id = 0; id < addr_to_U[msg.sender].amount_tickets; id++) {
+            if (isValidTicket(id)) {
+                if (addr_to_U[msg.sender].tickets[id].attend_address == _ticket_address &&
+                    addr_to_U[msg.sender].tickets[id].level == _level &&
+                    addr_to_U[msg.sender].tickets[id].seat == _seat_num){
+                        addr_to_U[msg.sender].tickets[id].isValid = false;
+                        addr_to_U[msg.sender].tickets[id].isEnd = true;
+                        emit OnRefundTicket("success");
+                    }
+            }
+        }
+        emit OnRefundTicket("can't not find ticket");
     }
 }
