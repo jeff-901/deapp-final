@@ -51,6 +51,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function convert(date) {
+  let year = date.getFullYear().toString();
+  let month = (date.getMonth()+1).toString();
+  if(month.length === 1){
+    month = "0" + month
+  }
+  let day = date.getDate().toString();
+  if(day.length === 1){
+    day = "0"+day
+  }
+  return year + "-" + month + "-" + day
+}
+
 // const campaigns = [
 //     {
 //         campaign_name: 'NTU Basketball Cup',
@@ -64,8 +77,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Booking(props) {
   const classes = useStyles();
-  const [campaigns, setCampaigns] = useState(null);
-  const [open, setOpen] = useState(false);
+  const [campaigns, setCampaigns] = useState([]);
+  const [open, setOpen] = useState([]);
+  const [open1, setOpen1] = useState([]);
   useEffect(async () => {
     console.log("fetch data");
     let result = await props.methods
@@ -85,27 +99,37 @@ export default function Booking(props) {
             .viewCampaign(result[i])
             .call({ from: props.accounts[0] })
         );
+        let tmp  = new Date(parseInt(c[i]["campaign_start_time"]))
+        c[i]["campaign_start_time"] = convert(tmp);
+        tmp  = new Date(parseInt(c[i]["campaign_end_time"]))
+        c[i]["campaign_end_time"] = convert(tmp);
         c[i]["address"] = result[i];
       }
       // console.log(c);
     }
     setCampaigns(c);
-  }, [open]);
+    let toOpen = Array(campaigns.length).fill(false);
+    console.log(toOpen);
+    setOpen(toOpen);
+    console.log(open);
+  }, [open1]);
   // init();
 
-  const handleBookIt = () => {
-    setOpen(true);
+  const handleBookIt = (index) => {
+    let toOpen = Array(campaigns.length).fill(false);
+    toOpen[index] = true;
+    setOpen(toOpen);
   };
-
+  console.log(campaigns);
   return (
     <React.Fragment>
       <CssBaseline />
-      <MyAppBar
+      {/* <MyAppBar
         user={props.user}
         methods={props.methods}
         accounts={props.accounts}
         setUser={props.setUser}
-      />
+      /> */}
       <main>
         {/* Hero unit */}
         <div className={classes.heroContent}>
@@ -147,7 +171,8 @@ export default function Booking(props) {
                       </Typography>
                       <Typography>{campaign.abstraction}</Typography>
                       <Typography>
-                        Available: {campaign.campaign_start_time} ~{" "}
+                        Time:
+                        {campaign.campaign_start_time} ~{" "}
                         {campaign.campaign_end_time}
                       </Typography>
                     </CardContent>
@@ -156,13 +181,13 @@ export default function Booking(props) {
                         size="small"
                         color="primary"
                         onClick={() => {
-                          handleBookIt();
+                          handleBookIt(index);
                         }}
                       >
                         Book it!
                       </Button>
                       <BookModal
-                        open={open}
+                        open={open[index]}
                         setOpen={setOpen}
                         campaign={campaign}
                         methods={props.methods}

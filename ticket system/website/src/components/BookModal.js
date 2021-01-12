@@ -119,8 +119,8 @@ export default function BookModal(props) {
   };
   // console.log(props.campaign);
 
-  let start_time = new Date(Number(props.campaign.campaign_start_time * 1000)); //change second to millisecond
-  let end_time = new Date(Number(props.campaign.campaign_end_time * 1000));
+  let start_time = new Date(props.campaign.campaign_start_time); //change second to millisecond
+  let end_time = new Date(props.campaign.campaign_end_time);
   return (
     <Modal
       open={props.open}

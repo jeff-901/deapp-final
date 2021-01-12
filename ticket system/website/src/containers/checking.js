@@ -48,12 +48,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function convert(date) {
+  let year = date.getFullYear().toString();
+  let month = (date.getMonth()+1).toString();
+  if(month.length === 1){
+    month = "0" + month
+  }
+  let day = date.getDate().toString();
+  if(day.length === 1){
+    day = "0"+day
+  }
+  return year + "-" + month + "-" + day
+}
+
 export default function Checking(props) {
   const classes = useStyles();
   const [openall, setOpenall] = useState([]);
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
-  let campaigns;
+  const [campaigns, setCampaigns] = useState([]);
+  const [tickets, setTickets] = useState([])
+  let my_campaigns;
   let levels;
   let seats;
   let campaigns_address;
@@ -68,23 +83,62 @@ export default function Checking(props) {
     console.log("campaign_address: ", campaigns_address);
     console.log("levels: ", levels);
     console.log("seats: ", seats);
-    campaigns = await props.methods
+    my_campaigns = await props.methods
       .getUserCampaigns()
       .call({ from: props.accounts[0] });
-    console.log("campaign: ", campaigns);
-  });
+    console.log("campaign: ", my_campaigns);
+    let c = [];
+    if (my_campaigns === undefined || my_campaigns === []) {
+      setCampaigns([]);
+    } else {
+      for (let i = 0; i < my_campaigns.length; i++) {
+        c.push(
+          await props.methods
+            .viewCampaign(my_campaigns[i])
+            .call({ from: props.accounts[0] })
+        );
+        let tmp  = new Date(parseInt(c[i]["campaign_start_time"]))
+        c[i]["campaign_start_time"] = convert(tmp);
+        tmp  = new Date(parseInt(c[i]["campaign_end_time"]))
+        c[i]["campaign_end_time"] = convert(tmp);
+        c[i]["address"] = my_campaigns[i];
+      }
+    }
+    // for (let i = 0; i < c.length; i++){
+    //   c[i][]
+    // }
+    setCampaigns(c);
+    // console.log(campaigns)
+    // setOpenall(toOpen);
+    // console.log(openall)
+    console.log(campaigns)
+    let toOpen = Array(campaigns.length).fill(false);
+    console.log(toOpen);
+    setOpenall(toOpen);
+    console.log(openall);
+  },[open]);
+  // campaigns = [
+  //   {
+  //     campaign_name: "test",
+  //     abstraction: "testing",
+  //     campaign_start_time: "2021-01-18",
+  //     campaign_end_time: "2021-01-18",
+  //     price: ["10"],
+  //   },
+  //   {
+  //     campaign_name: "test2",
+  //     abstraction: "testing2",
+  //     campaign_start_time: "2021-01-20",
+  //     campaign_end_time: "2021-01-20",
+  //     price: ["10"],
+  //   },
+  // ];
 
-  campaigns = [
-    {
-      campaign_name: "test",
-      abstraction: "testing",
-      campaign_start_time: "2021-01-18",
-      campaign_end_time: "2021-01-18",
-      price: ["10"],
-    },
-  ];
-  const handleCheck = () => {
-    setOpen(true);
+
+  const handleCheck = (index) => {
+    let toOpen = Array(campaigns.length).fill(false);
+    toOpen[index] = true;
+    setOpenall(toOpen);
     // console.log("open");
     // let result = await props.methods
     //   .buyTicket(address, 1)
@@ -113,7 +167,7 @@ export default function Checking(props) {
   return (
     <React.Fragment>
       <CssBaseline />
-      <MyAppBar />
+      {/* <MyAppBar /> */}
       <main>
         {/* Hero unit */}
         <div className={classes.heroContent}>
@@ -130,71 +184,34 @@ export default function Checking(props) {
           </Container>
         </div>
         <Container className={classes.cardGrid} maxWidth="md">
+          <Typography
+            component="h3"
+            variant="h4"
+            align="Left"
+            color="textPrimary"
+            gutterBottom
+          >
+            Your tickets
+          </Typography>
           {/* End hero unit */}
-          {campaigns ? (
+          {tickets ? (
             <Grid container spacing={4}>
-              {campaigns.map((campaign, index) => (
-                <Grid item key={campaign} xs={12} sm={6} md={4}>
+              {tickets.map((ticket, index) => (
+                <Grid item key={ticket} xs={12} sm={6} md={4}>
                   <Card className={classes.card}>
                     <CardMedia
                       className={classes.cardMedia}
                       image="https://source.unsplash.com/random"
-                      title={campaign.campaign_name}
+                      title={ticket.campaign_name}
                     />
                     <CardContent className={classes.cardContent}>
                       <Typography gutterBottom variant="h5" component="h2">
-                        {campaign.campaign_name}
+                        {ticket.campaign_name}
                       </Typography>
-                      <Typography>{campaign.abstraction}</Typography>
+                      <Typography>{ticket.abstraction}</Typography>
                       <Typography>
-                        Time: {campaign.campaign_start_time} ~{" "}
-                        {campaign.campaign_end_time}
-                      </Typography>
-                    </CardContent>
-                    <CardActions>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => {
-                          handleCheck();
-                        }}
-                      >
-                        Check it!
-                      </Button>
-                      <CheckModal
-                        open={open}
-                        setOpen={setOpen}
-                        campaign={campaign}
-                      />
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          ) : (
-            <h1>Loading or No campaign yet</h1>
-          )}
-        </Container>
-        <Container className={classes.cardGrid} maxWidth="md">
-          {/* End hero unit */}
-          {campaigns ? (
-            <Grid container spacing={4}>
-              {campaigns.map((campaign, index) => (
-                <Grid item key={campaign} xs={12} sm={6} md={4}>
-                  <Card className={classes.card}>
-                    <CardMedia
-                      className={classes.cardMedia}
-                      image="https://source.unsplash.com/random"
-                      title={campaign.campaign_name}
-                    />
-                    <CardContent className={classes.cardContent}>
-                      <Typography gutterBottom variant="h5" component="h2">
-                        {campaign.campaign_name}
-                      </Typography>
-                      <Typography>{campaign.abstraction}</Typography>
-                      <Typography>
-                        Time: {campaign.campaign_start_time} ~{" "}
-                        {campaign.campaign_end_time}
+                        Time: {ticket.campaign_start_time} ~{" "}
+                        {ticket.campaign_end_time}
                       </Typography>
                     </CardContent>
                     <CardActions>
@@ -207,9 +224,64 @@ export default function Checking(props) {
                       >
                         Check it!
                       </Button>
-                      <CashModal
+                      <CheckModal
                         open={open1}
                         setOpen={setOpen1}
+                        campaign={ticket}
+                      />
+                    </CardActions>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <h1>Loading or No ticket yet</h1>
+          )}
+        </Container>
+        <Container className={classes.cardGrid} maxWidth="md">
+          <Typography
+            component="h3"
+            variant="h4"
+            align="Left"
+            color="textPrimary"
+            gutterBottom
+          >
+            Your campaigns
+          </Typography>
+          {/* End hero unit */}
+          {campaigns ? (
+            <Grid container spacing={4}>
+              {campaigns.map((campaign, index) => (
+                <Grid item key={campaign} xs={12} sm={6} md={4}>
+                  <Card className={classes.card}>
+                    <CardMedia
+                      className={classes.cardMedia}
+                      image="https://source.unsplash.com/random"
+                      title={campaign.campaign_name}
+                    />
+                    <CardContent className={classes.cardContent}>
+                      <Typography gutterBottom variant="h5" component="h2">
+                        {campaign.campaign_name}
+                      </Typography>
+                      <Typography>{campaign.abstraction}</Typography>
+                      <Typography>
+                        Time: {campaign.campaign_start_time} ~{" "}
+                        {campaign.campaign_end_time}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => {
+                          handleCheck(index);
+                        }}
+                      >
+                        Check it!
+                      </Button>
+                      <CashModal
+                        open={openall[index]}
+                        setOpen={setOpenall}
                         campaign={campaign}
                       />
                     </CardActions>

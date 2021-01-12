@@ -112,7 +112,7 @@ export default function Main(props) {
   return (
     <React.Fragment>
       <CssBaseline />
-      <MyAppBar user={props.user} methods={props.methods} accounts={props.accounts} setUser={props.setUser}/>
+      {/* <MyAppBar user={props.user} methods={props.methods} accounts={props.accounts} setUser={props.setUser}/> */}
       {/* Hero unit */}
       <Container maxWidth="sm" component="main" className={classes.heroContent}>
         <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>

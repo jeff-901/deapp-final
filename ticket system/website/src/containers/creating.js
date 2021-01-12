@@ -35,14 +35,14 @@ export default function Creating(props) {
     campaign_name: "NTU Basketball Cup",
     seats: 0,
     price: 0,
-    start_time: "",
-    end_time: "",
-    sell_time: "",
+    start_time: "2021-01-01",
+    end_time: "2021-01-01",
+    sell_time: "2021-01-01T12:00",
     abstraction: "",
   });
   // x
   const handleCreate = async () => {
-    // console.log("create")
+    console.log("create")
     // console.log(props.methods.addCampaign)
     // console.log("user: ", props.user);
     if (
@@ -61,14 +61,25 @@ export default function Creating(props) {
       let wei = Web3.utils.toWei("0.5", "ether");
       let wei2 = Web3.utils.toWei("0.1", "ether");
       let result = await props.methods
+        // .addCampaign(
+        //   info.campaign_name,
+        //   2,
+        //   [10, 20],
+        //   [wei, wei2],
+        //   /*info.levels, info.seats, info.price, startTime, endTime, sellTime*/ 1,
+        //   5000000000,
+        //   1,
+        //   info.abstraction
+        // )
         .addCampaign(
           info.campaign_name,
           2,
           [10, 20],
           [wei, wei2],
-          /*info.levels, info.seats, info.price, startTime, endTime, sellTime*/ 1,
-          5000000000,
-          1,
+          /*info.levels, info.seats, info.price, startTime, endTime, sellTime*/ 
+          Date.parse(info.start_time),
+          Date.parse(info.end_time),
+          Date.parse(info.sell_time),
           info.abstraction
         )
         .send({ from: props.accounts[0] });
@@ -81,6 +92,15 @@ export default function Creating(props) {
       } else {
         alert("error");
       }
+    }
+    else {
+      alert("Please fill in the complete information!");
+      console.log(info.campaign_name);
+      console.log(Date.parse(info.start_time));
+      let tryd = new Date(Date.parse(info.start_time));
+      console.log(tryd)
+      console.log(info.end_time);
+      console.log(info.sell_time);
     }
   };
 
@@ -145,7 +165,7 @@ export default function Creating(props) {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <TextField
+                  {/* <TextField
                     variant="outlined"
                     required
                     fullWidth
@@ -157,10 +177,29 @@ export default function Creating(props) {
                         ["start_time"]: e.target.value,
                       }));
                     }}
+                  /> */}
+                   <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="date"
+                    label="Start Time"
+                    type="date"
+                    defaultValue="2021-01-01"
+                    className={classes.textField}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    onChange={(e) => {
+                      setInfo((info) => ({
+                        ...info,
+                        ["start_time"]: e.target.value,
+                      }));
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <TextField
+                  {/* <TextField
                     variant="outlined"
                     required
                     fullWidth
@@ -172,15 +211,53 @@ export default function Creating(props) {
                         ["end_time"]: e.target.value,
                       }));
                     }}
+                  /> */}
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="date"
+                    label="End Time"
+                    type="date"
+                    defaultValue="2021-01-01"
+                    className={classes.textField}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    onChange={(e) => {
+                      setInfo((info) => ({
+                        ...info,
+                        ["end_time"]: e.target.value,
+                      }));
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField
+                  {/* <TextField
                     variant="outlined"
                     required
                     fullWidth
                     id="sellTime"
                     label="Sell Time"
+                    onChange={(e) => {
+                      setInfo((info) => ({
+                        ...info,
+                        ["sell_time"]: e.target.value,
+                      }));
+                    }}
+                  /> */}
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="datetime-local"
+                    label="Sell Time"
+                    type="datetime-local"
+                    defaultValue="2021-01-01T00:00"
+                    className={classes.textField}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                     onChange={(e) => {
                       setInfo((info) => ({
                         ...info,
