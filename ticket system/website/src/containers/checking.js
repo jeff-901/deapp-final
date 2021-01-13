@@ -50,15 +50,15 @@ const useStyles = makeStyles((theme) => ({
 
 function convert(date) {
   let year = date.getFullYear().toString();
-  let month = (date.getMonth()+1).toString();
-  if(month.length === 1){
-    month = "0" + month
+  let month = (date.getMonth() + 1).toString();
+  if (month.length === 1) {
+    month = "0" + month;
   }
   let day = date.getDate().toString();
-  if(day.length === 1){
-    day = "0"+day
+  if (day.length === 1) {
+    day = "0" + day;
   }
-  return year + "-" + month + "-" + day
+  return year + "-" + month + "-" + day;
 }
 
 export default function Checking(props) {
@@ -67,7 +67,7 @@ export default function Checking(props) {
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
-  const [tickets, setTickets] = useState([])
+  const [tickets, setTickets] = useState([]);
   let my_campaigns;
   let levels;
   let seats;
@@ -79,32 +79,32 @@ export default function Checking(props) {
     campaigns_address = result[0];
     levels = result[1];
     seats = result[2];
-    console.log("tickets: ");
-    console.log("campaign_address: ", campaigns_address);
-    console.log("levels: ", levels);
-    console.log("seats: ", seats);
-    console.log(result)
+    // console.log("tickets: ");
+    // console.log("campaign_address: ", campaigns_address);
+    // console.log("levels: ", levels);
+    // console.log("seats: ", seats);
+    // console.log(result);
     let t = [];
     if (result === undefined || result === {}) {
       setTickets([]);
     } else {
-      for (let i = 0; i < result[0].length; i++){
+      for (let i = 0; i < result[0].length; i++) {
         t.push(
           await props.methods
             .viewCampaign(result[0][i])
             .call({ from: props.accounts[0] })
         );
-        let tmp  = new Date(parseInt(t[i]["campaign_start_time"]))
+        let tmp = new Date(parseInt(t[i]["campaign_start_time"]));
         t[i]["campaign_start_time"] = convert(tmp);
-        tmp  = new Date(parseInt(t[i]["campaign_end_time"]))
+        tmp = new Date(parseInt(t[i]["campaign_end_time"]));
         t[i]["campaign_end_time"] = convert(tmp);
         t[i]["address"] = result[0][i];
-        t[i]['level'] = result[1][i];
-        t[i]['seat_num'] = result[2][i];
+        t[i]["level"] = result[1][i];
+        t[i]["seat_num"] = result[2][i];
       }
     }
     setTickets(t);
-    
+
     my_campaigns = await props.methods
       .getUserCampaigns()
       .call({ from: props.accounts[0] });
@@ -119,9 +119,9 @@ export default function Checking(props) {
             .viewCampaign(my_campaigns[i])
             .call({ from: props.accounts[0] })
         );
-        let tmp  = new Date(parseInt(c[i]["campaign_start_time"]))
+        let tmp = new Date(parseInt(c[i]["campaign_start_time"]));
         c[i]["campaign_start_time"] = convert(tmp);
-        tmp  = new Date(parseInt(c[i]["campaign_end_time"]))
+        tmp = new Date(parseInt(c[i]["campaign_end_time"]));
         c[i]["campaign_end_time"] = convert(tmp);
         c[i]["address"] = my_campaigns[i];
       }
@@ -133,12 +133,12 @@ export default function Checking(props) {
     // console.log(campaigns)
     // setOpenall(toOpen);
     // console.log(openall)
-    console.log(campaigns)
+    console.log(campaigns);
     let toOpen = Array(campaigns.length).fill(false);
     console.log(toOpen);
     setOpenall(toOpen);
     console.log(openall);
-  },[open]);
+  }, [open]);
   // campaigns = [
   //   {
   //     campaign_name: "test",
@@ -155,7 +155,6 @@ export default function Checking(props) {
   //     price: ["10"],
   //   },
   // ];
-
 
   const handleCheck = (index) => {
     let toOpen = Array(campaigns.length).fill(false);
