@@ -56,6 +56,10 @@ contract Campaign {
         return price;
     } 
 
+    function getRemain() public view returns(uint256[] memory) {
+        return remain;
+    } 
+
     function buy(uint256 amount, uint256 level)
         public
         payable
@@ -229,7 +233,8 @@ contract Server {
             uint256 campaign_start_time,
             uint256 campaign_end_time,
             uint256 start_sell_time,
-            string memory abstraction
+            string memory abstraction,
+            uint256[] memory remain
         )
     {
         Campaign currentCampaign = Campaign(campaign_address);
@@ -240,6 +245,7 @@ contract Server {
         campaign_end_time = currentCampaign.campaign_end_time();
         start_sell_time = currentCampaign.start_sell_time();
         abstraction = currentCampaign.abstraction();
+        remain = currentCampaign.getRemain();
     }
 
     function getUserTickets()
@@ -262,7 +268,6 @@ contract Server {
     function getUserCampaigns()
         public
         view
-        
         returns (address[] memory u_campaigns)
     {
         Users users = Users(users_address);
