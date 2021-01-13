@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Creating(props) {
   const classes = useStyles();
   const [redirect, setRedirect] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [info, setInfo] = useState({
     campaign_name: "NTU Basketball Cup",
     seats: 0,
@@ -45,6 +46,7 @@ export default function Creating(props) {
     console.log("create")
     // console.log(props.methods.addCampaign)
     // console.log("user: ", props.user);
+    setLoading(true);
     if (
       info.campaign_name &&
       info.seats &&
@@ -83,6 +85,7 @@ export default function Creating(props) {
           info.abstraction
         )
         .send({ from: props.accounts[0] });
+      setLoading(false);
       // console.log(result);
       result = result.events.OnAddCampaign.returnValues;
       // console.log(result);
@@ -94,6 +97,7 @@ export default function Creating(props) {
       }
     }
     else {
+      setLoading(false)
       alert("Please fill in the complete information!");
       console.log(info.campaign_name);
       console.log(Date.parse(info.start_time));
@@ -115,7 +119,7 @@ export default function Creating(props) {
             <Typography component="h1" variant="h5">
               Create your campaign
             </Typography>
-            <form className={classes.form} noValidate>
+            {loading === false ? (<form className={classes.form} noValidate>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <TextField
@@ -297,6 +301,9 @@ export default function Creating(props) {
                 Create Now!
               </Button>
             </form>
+            ): (
+              <h1>Creating your campaign...</h1>
+            )}
           </div>
           <Box mt={5}>
             <ReturnMain />

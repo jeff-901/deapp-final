@@ -109,8 +109,15 @@ export default function BookModal(props) {
   const handleAmountChange = (index) => {
     setAmount(Number(index));
   };
-  const handleBuy = () => {
-
+  const handleWithdraw = async () => {
+    let result = await props.methods
+      .withdraw(
+        props.campaign.address
+      )
+      .send({
+        from: props.accounts[0],
+      });
+      props.setOpen(false);
   };
   // console.log(props.campaign);
 
@@ -177,7 +184,7 @@ export default function BookModal(props) {
                 color="primary"
                 className={classes.submit}
                 onClick={() => {
-                  handleBuy();
+                  handleWithdraw();
                 }}
               >
                 Take money

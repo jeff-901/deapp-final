@@ -187,6 +187,7 @@ export default function Checking(props) {
     //   alert("fail");
     // }
   };
+  console.log("tickets:", tickets)
 
   return (
     <React.Fragment>
@@ -218,7 +219,7 @@ export default function Checking(props) {
             Your tickets
           </Typography>
           {/* End hero unit */}
-          {tickets ? (
+          {tickets.length != 0 ? (
             <Grid container spacing={4}>
               {tickets.map((ticket, index) => (
                 <Grid item key={ticket} xs={12} sm={6} md={4}>
@@ -261,7 +262,7 @@ export default function Checking(props) {
               ))}
             </Grid>
           ) : (
-            <h1>Loading or No ticket yet</h1>
+            <h1>You have no ticket yet</h1>
           )}
         </Container>
         <Container className={classes.cardGrid} maxWidth="md">
@@ -275,7 +276,7 @@ export default function Checking(props) {
             Your campaigns
           </Typography>
           {/* End hero unit */}
-          {campaigns ? (
+          {campaigns.length != 0 ? (
             <Grid container spacing={4}>
               {campaigns.map((campaign, index) => (
                 <Grid item key={campaign} xs={12} sm={6} md={4}>
@@ -318,7 +319,7 @@ export default function Checking(props) {
               ))}
             </Grid>
           ) : (
-            <h1>Loading or No campaign yet</h1>
+            <h1>You have no campaign yet</h1>
           )}
         </Container>
       </main>

@@ -159,7 +159,7 @@ export default function Booking(props) {
         </div>
         <Container className={classes.cardGrid} maxWidth="md">
           {/* End hero unit */}
-          {campaigns ? (
+          {campaigns.length != 0 ? (
             <Grid container spacing={4}>
               {campaigns.map((campaign, index) => (
                 <Grid item key={campaign} xs={12} sm={6} md={4}>
@@ -203,7 +203,7 @@ export default function Booking(props) {
               ))}
             </Grid>
           ) : (
-            <h1>Loading or No campaign yet</h1>
+            <h1>There is no campaign yet</h1>
           )}
         </Container>
       </main>
