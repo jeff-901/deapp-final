@@ -103,6 +103,7 @@ export default function BookModal(props) {
     // console.log(props.campaign.address);
     // console.log(props.campaign.price.findIndex((ele) => ele == level));
     // console.log(amount);
+    props.setOpen(false);
     let result = await props.methods
       .buyTicket(
         props.campaign.address,
@@ -115,7 +116,7 @@ export default function BookModal(props) {
       });
     result = result.events.OnBuyTicket.returnValues;
     alert(result.message);
-    props.setOpen(false);
+    
   };
   // console.log(props.campaign);
 
