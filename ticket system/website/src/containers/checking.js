@@ -99,6 +99,8 @@ export default function Checking(props) {
         tmp  = new Date(parseInt(t[i]["campaign_end_time"]))
         t[i]["campaign_end_time"] = convert(tmp);
         t[i]["address"] = result[0][i];
+        t[i]['level'] = result[1][i];
+        t[i]['seat_num'] = result[2][i];
       }
     }
     setTickets(t);
@@ -250,6 +252,8 @@ export default function Checking(props) {
                         open={open1[index]}
                         setOpen={setOpen1}
                         campaign={ticket}
+                        methods={props.methods}
+                        accounts={props.accounts}
                       />
                     </CardActions>
                   </Card>
@@ -305,6 +309,8 @@ export default function Checking(props) {
                         open={openall[index]}
                         setOpen={setOpenall}
                         campaign={campaign}
+                        methods={props.methods}
+                        accounts={props.accounts}
                       />
                     </CardActions>
                   </Card>

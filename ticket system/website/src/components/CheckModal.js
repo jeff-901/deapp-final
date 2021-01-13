@@ -109,8 +109,19 @@ export default function BookModal(props) {
   const handleAmountChange = (index) => {
     setAmount(Number(index));
   };
-  const handleBuy = () => {
-
+  const handleRefund = async () => {
+    let result = await props.methods
+      .refund(
+        props.campaign.address,
+        props.campaign.level,
+        props.campaign.seat_num
+      )
+      .send({
+        from: props.accounts[0],
+      });
+      // result = result.events.onRefundTicket.returnValues;
+      // alert(result.message);
+      // props.setOpen(false);
   };
   // console.log(props.campaign);
 
@@ -154,6 +165,9 @@ export default function BookModal(props) {
             
             <Grid item xs={12}>
               <Typography component="p" variant="h5" className={classes.time}>
+                Seat Number: {props.campaign.seat_num}
+              </Typography>
+              <Typography component="p" variant="h5" className={classes.time}>
                 Price: {props.campaign.price}
               </Typography>
             </Grid>
@@ -165,7 +179,7 @@ export default function BookModal(props) {
                 color="primary"
                 className={classes.submit}
                 onClick={() => {
-                  handleBuy();
+                  handleRefund();
                 }}
               >
                 Confirm refund
