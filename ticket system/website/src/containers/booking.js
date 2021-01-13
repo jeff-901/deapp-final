@@ -103,10 +103,14 @@ export default function Booking(props) {
         c[i]["campaign_start_time"] = convert(tmp);
         tmp  = new Date(parseInt(c[i]["campaign_end_time"]))
         c[i]["campaign_end_time"] = convert(tmp);
+        tmp  = new Date(parseInt(c[i]["start_sell_time"]))
+        c[i]["start_sell_time"] = tmp;
         c[i]["address"] = result[i];
       }
-      // console.log(c);
+      console.log(c);
     }
+    let now = new Date();
+    c = c.filter(cam => Number(cam["start_sell_time"]) < Number(now));
     setCampaigns(c);
     let toOpen = Array(campaigns.length).fill(false);
     console.log(toOpen);

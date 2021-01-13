@@ -65,7 +65,7 @@ export default function Checking(props) {
   const classes = useStyles();
   const [openall, setOpenall] = useState([]);
   const [open, setOpen] = useState(false);
-  const [open1, setOpen1] = useState(false);
+  const [open1, setOpen1] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
   const [tickets, setTickets] = useState([])
   let my_campaigns;
@@ -83,6 +83,26 @@ export default function Checking(props) {
     console.log("campaign_address: ", campaigns_address);
     console.log("levels: ", levels);
     console.log("seats: ", seats);
+    console.log(result)
+    let t = [];
+    if (result === undefined || result === {}) {
+      setTickets([]);
+    } else {
+      for (let i = 0; i < result[0].length; i++){
+        t.push(
+          await props.methods
+            .viewCampaign(result[0][i])
+            .call({ from: props.accounts[0] })
+        );
+        let tmp  = new Date(parseInt(t[i]["campaign_start_time"]))
+        t[i]["campaign_start_time"] = convert(tmp);
+        tmp  = new Date(parseInt(t[i]["campaign_end_time"]))
+        t[i]["campaign_end_time"] = convert(tmp);
+        t[i]["address"] = result[0][i];
+      }
+    }
+    setTickets(t);
+    
     my_campaigns = await props.methods
       .getUserCampaigns()
       .call({ from: props.accounts[0] });
@@ -150,8 +170,10 @@ export default function Checking(props) {
     //   alert("fail");
     // }
   };
-  const handleCheck1 = () => {
-    setOpen1(true);
+  const handleCheck1 = (index) => {
+    let toOpen = Array(campaigns.length).fill(false);
+    toOpen[index] = true;
+    setOpen1(toOpen);
     // console.log("open");
     // let result = await props.methods
     //   .buyTicket(address, 1)
@@ -219,13 +241,13 @@ export default function Checking(props) {
                         size="small"
                         color="primary"
                         onClick={() => {
-                          handleCheck1();
+                          handleCheck1(index);
                         }}
                       >
                         Check it!
                       </Button>
                       <CheckModal
-                        open={open1}
+                        open={open1[index]}
                         setOpen={setOpen1}
                         campaign={ticket}
                       />
