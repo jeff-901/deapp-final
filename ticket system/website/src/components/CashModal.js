@@ -161,19 +161,19 @@ export default function BookModal(props) {
             
             <Grid item xs={12}>
               <Typography component="p" variant="h5" className={classes.time}>
-                Price: {props.campaign.price}
+                Price: {props.campaign.price[0]}
               </Typography>
             </Grid>
 
             <Grid item xs={12}>
               <Typography component="p" variant="h5" className={classes.time}>
-                Amount: 10
+                Amount: {props.campaign.remain[1]}
               </Typography>
             </Grid>
 
             <Grid item xs={12}>
               <Typography component="p" variant="h5" className={classes.time}>
-                Total Amount: {props.campaign.price*10}
+                Total Amount: {props.campaign.price[0]*10}
               </Typography>
             </Grid>
            

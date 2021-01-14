@@ -133,7 +133,7 @@ export default function Checking(props) {
     // console.log(campaigns)
     // setOpenall(toOpen);
     // console.log(openall)
-    console.log(campaigns);
+    console.log("campaign",campaigns[0]);
     let toOpen = Array(campaigns.length).fill(false);
     console.log(toOpen);
     setOpenall(toOpen);
