@@ -16,6 +16,7 @@ contract Campaign {
     uint256[] public remain;
 
     constructor(
+        address user,
         string memory _campaign_name,
         uint256 _levels,
         uint256[] memory _seats,
@@ -25,7 +26,7 @@ contract Campaign {
         uint256 _start_sell_time,
         string memory _abstraction
     ) public {
-        owner = msg.sender;
+        owner = user;
         levels = _levels;
         uint256 total_seats = 0;
         for (uint256 i = 0; i < levels; i++) {
@@ -60,7 +61,7 @@ contract Campaign {
         return remain;
     } 
 
-    function buy(uint256 amount, uint256 level)
+    function buy(address user,uint256 amount, uint256 level)
         public
         payable
         returns (uint256[] memory seat_num)
@@ -77,7 +78,7 @@ contract Campaign {
                 num += i;
                 address temp = seat_owner[num];
                 if (temp == address(0x00) && remain[level] >= amount) {
-                    seat_owner[num] = msg.sender;
+                    seat_owner[num] = user;
                     // address(this).call{value: price[level]}("");
                     // uint256 cost = (price[level]);
                     address(this).transfer(price[level]);
@@ -89,22 +90,23 @@ contract Campaign {
         }
     }
 
-    function withdraw() public restricted {
-        if (block.timestamp > campaign_end_time) {
+    function withdraw(address payable user) public restricted {
+        require ( block.timestamp > campaign_end_time, "the campaign haven't closed");
+        // if (block.timestamp > campaign_end_time) {
             // msg.sender.call{value: address(this).balance}("");
-            msg.sender.transfer(address(this).balance);
-        }
+        user.transfer(address(this).balance);
+        // }
     }
 
-    function refund(uint256 level, uint256 seat_num) public {
-        if (block.timestamp < campaign_end_time) {
-            if (seat_owner[seat_num]!=address(0x0)){
-                seat_owner[seat_num]=address(0x0);
-                // msg.sender.call{value: price[level]}("");
-                msg.sender.transfer(price[level]);
-            }
-            
-        }
+    function refund(address payable user, uint256 level, uint256 seat_num) public {
+        require ( block.timestamp < campaign_end_time, "the campaign is close");
+        require ( seat_owner[seat_num] == user, "you aren't the owner");
+        // if (block.timestamp < campaign_end_time) {
+        //     if (seat_owner[seat_num]!=address(0x0)){
+        seat_owner[seat_num]=address(0x0);
+        user.transfer(price[level]);
+            // }
+        // }
     }
 
     receive() external payable {}
@@ -116,16 +118,16 @@ contract Server {
         bool isvalid;
     }
 
-    struct return_campaign {
-        address _campaign_address;
-        string _campaign_name;
-        uint256 _seats;
-        uint256 _price;
-        uint256 _campaign_start_time;
-        uint256 _campaign_end_time;
-        uint256 _start_sell_time;
-        string _abstraction;
-    }
+    // struct return_campaign {
+    //     address _campaign_address;
+    //     string _campaign_name;
+    //     uint256 _seats;
+    //     uint256 _price;
+    //     uint256 _campaign_start_time;
+    //     uint256 _campaign_end_time;
+    //     uint256 _start_sell_time;
+    //     string _abstraction;
+    // }
     event OnAddUser(string message, address user_address);
     event OnGetCampaigns(address payable[] campaigns);
     event OnAddCampaign(string message);
@@ -137,17 +139,6 @@ contract Server {
     constructor() public{
         users_address = address(new Users());
     }
-    // mapping(address => address) private users;
-    // mapping(address => return_campaign) public CampaignStruct;
-    // modifier validUser() {
-    //     require(users[msg.sender] != address(0x0));
-    //     _;
-    // }
-
-    // modifier validSignup() {
-    //     require(users[msg.sender] == address(0x0));
-    //     _;
-    // }
 
     function callServer(string memory i) public pure returns (string memory) {
         return (i);
@@ -168,6 +159,7 @@ contract Server {
         address payable campaign_address =
             address(
                 new Campaign(
+                    msg.sender,
                     _campaign_name,
                     _levels,
                     _seats,
@@ -180,48 +172,10 @@ contract Server {
             );
         campaigns.push(server_campaign(campaign_address, true));
         Users users = Users(users_address);
-        users.addCampaign(campaign_address);
+        users.addCampaign(msg.sender, campaign_address);
         message = "success";
-
         emit OnAddCampaign(message);
     }
-
-    // function addUser(string memory _name, string memory _pwd)
-    //     public
-    // {
-    //     string memory message;
-    //     address user_address;
-    //     if (users[msg.sender] == address(0x0)) {
-    //         user_address = address(new User(_name, _pwd));
-    //         users[msg.sender] = user_address;
-    //         message = "successs";
-    //     } else {
-    //         message = "already exist";
-    //     }
-    //     emit OnAddUser(message, user_address);
-    // }
-
-    // function checkUser(string memory _name, string memory _password)
-    //     public
-    //     view
-        
-    //     returns (bool success, address user)
-    // {
-    //     if (users[msg.sender] != address(0x0)) {
-    //         User currentUser = User(users[msg.sender]);
-    //         string memory name = currentUser.name();
-    //         string memory password = currentUser.getPassword();
-    //         success = (keccak256(abi.encodePacked(name)) ==
-    //             keccak256(abi.encodePacked(_name)) &&
-    //             keccak256(abi.encodePacked(password)) ==
-    //             keccak256(abi.encodePacked(_password)));
-    //         if (success) {
-    //             user = users[msg.sender];
-    //         } else {
-    //             user = address(0);
-    //         }
-    //     }
-    // }
 
     function viewCampaign(address payable campaign_address)
         public
@@ -255,14 +209,7 @@ contract Server {
         returns (address[] memory , uint256[] memory , uint256[] memory)
     {
         Users users = Users(users_address);
-        return users.ViewTickets();
-        // if (users[msg.sender] != address(0x0)) {
-        //     User currentUser = User(users[msg.sender]);
-        //     (u_campaigns, seats) = currentUser.ViewTickets();
-        // } else {
-        //     u_campaigns = new address[](0);
-        //     seats = new uint256[](0);
-        // }
+        return users.ViewTickets(msg.sender);
     }
 
     function getUserCampaigns()
@@ -271,11 +218,7 @@ contract Server {
         returns (address[] memory u_campaigns)
     {
         Users users = Users(users_address);
-        return users.ViewCampaigns();
-        // if (users[msg.sender] != address(0x0)) {
-        //     User currentUser = User(users[msg.sender]);
-        //     u_campaigns = currentUser.ViewCampaigns();
-        // }
+        return users.ViewCampaigns(msg.sender);
     }
 
     function getCampaigns() public view returns (address[] memory ) {
@@ -312,30 +255,29 @@ contract Server {
         Users users = Users(users_address);
         Campaign c = Campaign(campaign_address);
         if (c.remain(level) >= amount) {
-            seat_num = c.buy{value: msg.value}(amount, level);
+            seat_num = c.buy{value: msg.value}(msg.sender, amount, level);
         } else {
             message = "fail";
             emit OnBuyTicket(message);
         }
         for (uint256 i = 0; i < seat_num.length; i++) {
-            users.addTicket(campaign_address, seat_num[i], level);
+            users.addTicket(msg.sender, campaign_address, seat_num[i], level);
         }
         message = "success";
-        
         emit OnBuyTicket(message);
     }
 
     function withdraw(address payable campaign_address) public {
-        Campaign(campaign_address).withdraw(); 
+        Campaign(campaign_address).withdraw(msg.sender); 
     }
 
     function completeTicket(address payable campaign_address, uint256 level, uint256 seat_num) public {
-        Campaign(campaign_address).withdraw(); 
+        Users(users_address).CompleteTicket(msg.sender, campaign_address, level, seat_num);
     }
 
     function refund(address payable campaign_address, uint256 level, uint256 seat_num) public {
-        Campaign(campaign_address).refund(level, seat_num); 
-        Users(users_address).RefundTicket(campaign_address, level, seat_num);
+        Campaign(campaign_address).refund(msg.sender, level, seat_num); 
+        Users(users_address).RefundTicket(msg.sender, campaign_address, level, seat_num);
     }
 
     receive() external payable {}
@@ -422,60 +364,50 @@ contract Users {
         usr_addr_valid[user_addr] = true;
     }
     
-    function addCampaign(address payable _campaign_address) 
+    function addCampaign(address user, address payable _campaign_address) 
         public 
     {
-        if (!usr_addr_valid[msg.sender]){
-            addUser(msg.sender);
+        if (!usr_addr_valid[user]){
+            addUser(user);
         }
         OwnCampaign memory campaign =
             OwnCampaign(_campaign_address, true, false);
-        addr_to_U[msg.sender].campaigns.push(campaign);
-        addr_to_U[msg.sender].amount_campaigns += 1;
-        uint256 Id = addr_to_U[msg.sender].amount_campaigns - 1;
+        addr_to_U[user].campaigns.push(campaign);
+        addr_to_U[user].amount_campaigns += 1;
+        uint256 Id = addr_to_U[user].amount_campaigns - 1;
 
         emit OnAddCampaign(_campaign_address, Id);
     }
 
     // if more than one ticket is bought for a single campaign, just call iot several times
-    function addTicket(address payable _ticket_address, uint256 seat, uint256 level) 
+    function addTicket(address user, address payable _ticket_address, uint256 seat, uint256 level) 
         public 
     {
-        if (!usr_addr_valid[msg.sender]){
-            addUser(msg.sender);
+        if (!usr_addr_valid[user]){
+            addUser(user);
         }
         OwnTicket memory ticket =
             OwnTicket(_ticket_address, seat, level, true, false);
-        addr_to_U[msg.sender].tickets.push(ticket);
-        addr_to_U[msg.sender].amount_tickets += 1;
-        uint256 Id = addr_to_U[msg.sender].amount_tickets - 1;
+        addr_to_U[user].tickets.push(ticket);
+        addr_to_U[user].amount_tickets += 1;
+        uint256 Id = addr_to_U[user].amount_tickets - 1;
 
         emit OnAddTicket(_ticket_address, Id);
     }
 
-    // function getPassword(address user_addr)
-    //     public
-    //     view
-    //     isServer()
-    //     isUserValid(user_addr)
-    //     returns (string memory)
-    // {
-    //     return addr_to_U[user_addr].pwd;
-    // }
-
-    function ViewCampaigns() 
+    function ViewCampaigns(address user) 
         public 
         view 
         // isUserValid(user_addr)
         returns (address[] memory)
     {
-        if (!usr_addr_valid[msg.sender]){
+        if (!usr_addr_valid[user]){
             address[] memory tmp = new address[](0);
             return tmp;
         }
         uint256 len = 0;
-        uint256[] memory count_to_id = new uint256[](addr_to_U[msg.sender].amount_campaigns);
-        for (uint256 id = 0; id < addr_to_U[msg.sender].amount_campaigns; id++) {
+        uint256[] memory count_to_id = new uint256[](addr_to_U[user].amount_campaigns);
+        for (uint256 id = 0; id < addr_to_U[user].amount_campaigns; id++) {
             if (isValidCampaign(id)) {
                 count_to_id[len] = id;
                 len++;
@@ -483,26 +415,26 @@ contract Users {
         }
         address[] memory campaignList = new address[](len);
         for (uint256 i = 0; i < len; i++) {
-            campaignList[i] = addr_to_U[msg.sender].campaigns[count_to_id[i]].campaign_address;
+            campaignList[i] = addr_to_U[user].campaigns[count_to_id[i]].campaign_address;
         }
         return campaignList;
     }
 
-    function ViewTickets() 
+    function ViewTickets(address user) 
         public 
         view 
         // isUserValid(user_addr)
         returns (address[] memory, uint256[] memory, uint256[] memory )
     {
-        if (!usr_addr_valid[msg.sender]){
+        if (!usr_addr_valid[user]){
             address[] memory tmp_a = new address[](0);
             uint256[] memory tmp_l = new uint256[](0);
             uint256[] memory tmp_s = new uint256[](0);
             return (tmp_a, tmp_l, tmp_s);
         }
         uint256 len = 0;
-        uint256[] memory count_to_id = new uint256[](addr_to_U[msg.sender].amount_tickets);
-        for (uint256 id = 0; id < addr_to_U[msg.sender].amount_tickets; id++) {
+        uint256[] memory count_to_id = new uint256[](addr_to_U[user].amount_tickets);
+        for (uint256 id = 0; id < addr_to_U[user].amount_tickets; id++) {
             if (isValidTicket(id)) {
                 count_to_id[len] = id;
                 len++;
@@ -512,45 +444,45 @@ contract Users {
         uint256[] memory ticketLevels = new uint256[](len);
         uint256[] memory ticketSeats = new uint256[](len);
         for (uint256 i = 0; i < len; i++) {
-            ticketList[i] = addr_to_U[msg.sender].tickets[count_to_id[i]].attend_address;
-            ticketLevels[i] = addr_to_U[msg.sender].tickets[count_to_id[i]].level;
-            ticketSeats[i] = addr_to_U[msg.sender].tickets[count_to_id[i]].seat;
+            ticketList[i] = addr_to_U[user].tickets[count_to_id[i]].attend_address;
+            ticketLevels[i] = addr_to_U[user].tickets[count_to_id[i]].level;
+            ticketSeats[i] = addr_to_U[user].tickets[count_to_id[i]].seat;
         }
         return (ticketList, ticketLevels, ticketSeats);
     }
 
-    function CompleteCampagin(address _campaign_address) public 
+    function CompleteCampaign(address user, address _campaign_address) public 
     {
-        uint256 _id = addr_to_U[msg.sender].campaign_addr_to_id[_campaign_address];
-        addr_to_U[msg.sender].campaigns[_id].isValid = false;
-        addr_to_U[msg.sender].campaigns[_id].isEnd = true;
+        uint256 _id = addr_to_U[user].campaign_addr_to_id[_campaign_address];
+        addr_to_U[user].campaigns[_id].isValid = false;
+        addr_to_U[user].campaigns[_id].isEnd = true;
     }
 
-    function CompleteTicket(address _ticket_address, uint256 _level, uint256 _seat_num) public 
+    function CompleteTicket(address user, address _ticket_address, uint256 _level, uint256 _seat_num) public 
     {
-        for (uint256 id = 0; id < addr_to_U[msg.sender].amount_tickets; id++) {
+        for (uint256 id = 0; id < addr_to_U[user].amount_tickets; id++) {
             if (isValidTicket(id)) {
-                if (addr_to_U[msg.sender].tickets[id].attend_address == _ticket_address &&
-                    addr_to_U[msg.sender].tickets[id].level == _level &&
-                    addr_to_U[msg.sender].tickets[id].seat == _seat_num){
-                        addr_to_U[msg.sender].tickets[id].isValid = false;
-                        addr_to_U[msg.sender].tickets[id].isEnd = true;
+                if (addr_to_U[user].tickets[id].attend_address == _ticket_address &&
+                    addr_to_U[user].tickets[id].level == _level &&
+                    addr_to_U[user].tickets[id].seat == _seat_num){
+                        addr_to_U[user].tickets[id].isValid = false;
+                        addr_to_U[user].tickets[id].isEnd = true;
                         emit OnCompleteTicket("success");
                     }
             }
         }
-        emit OnCompleteTicket("can't not find ticket");
+        emit OnCompleteTicket("can't not find campaign");
     }
 
-    function RefundTicket(address _ticket_address, uint256 _level, uint256 _seat_num) public 
+    function RefundTicket(address user, address _ticket_address, uint256 _level, uint256 _seat_num) public 
     {
-        for (uint256 id = 0; id < addr_to_U[msg.sender].amount_tickets; id++) {
+        for (uint256 id = 0; id < addr_to_U[user].amount_tickets; id++) {
             if (isValidTicket(id)) {
-                if (addr_to_U[msg.sender].tickets[id].attend_address == _ticket_address &&
-                    addr_to_U[msg.sender].tickets[id].level == _level &&
-                    addr_to_U[msg.sender].tickets[id].seat == _seat_num){
-                        addr_to_U[msg.sender].tickets[id].isValid = false;
-                        addr_to_U[msg.sender].tickets[id].isEnd = true;
+                if (addr_to_U[user].tickets[id].attend_address == _ticket_address &&
+                    addr_to_U[user].tickets[id].level == _level &&
+                    addr_to_U[user].tickets[id].seat == _seat_num){
+                        addr_to_U[user].tickets[id].isValid = false;
+                        addr_to_U[user].tickets[id].isEnd = true;
                         emit OnRefundTicket("success");
                     }
             }
