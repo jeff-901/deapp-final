@@ -14,9 +14,11 @@ contract Campaign {
     string public abstraction;
     address[] seat_owner;
     uint256[] public remain;
+    string public link; 
 
     constructor(
-        address user,
+        string memory _link,
+        // address user,
         string memory _campaign_name,
         uint256 _levels,
         uint256[] memory _seats,
@@ -26,7 +28,7 @@ contract Campaign {
         uint256 _start_sell_time,
         string memory _abstraction
     ) public {
-        owner = user;
+        // owner = user;
         levels = _levels;
         uint256 total_seats = 0;
         for (uint256 i = 0; i < levels; i++) {
@@ -35,6 +37,7 @@ contract Campaign {
             total_seats += _seats[i];
             remain.push(_seats[i]);
         }
+        link = _link;
         campaign_name = _campaign_name;
         campaign_start_time = _campaign_start_time;
         campaign_end_time = _campaign_end_time;
@@ -47,6 +50,10 @@ contract Campaign {
     modifier restricted() {
         require(msg.sender == owner);
         _;
+    }
+
+    function setOwner(address user) public {
+        owner = user;
     }
 
     function getSeats() public view returns(uint256[] memory) {
@@ -118,16 +125,6 @@ contract Server {
         bool isvalid;
     }
 
-    // struct return_campaign {
-    //     address _campaign_address;
-    //     string _campaign_name;
-    //     uint256 _seats;
-    //     uint256 _price;
-    //     uint256 _campaign_start_time;
-    //     uint256 _campaign_end_time;
-    //     uint256 _start_sell_time;
-    //     string _abstraction;
-    // }
     event OnAddUser(string message, address user_address);
     event OnGetCampaigns(address payable[] campaigns);
     event OnAddCampaign(string message);
@@ -145,6 +142,7 @@ contract Server {
     }
 
     function addCampaign(
+        string memory _link,
         string memory _campaign_name,
         uint256 _levels,
         uint256[] memory _seats,
@@ -154,12 +152,11 @@ contract Server {
         uint256 _start_sell_time,
         string memory _abstraction
     ) public  {
-        string memory message;
-        
         address payable campaign_address =
             address(
                 new Campaign(
-                    msg.sender,
+                    _link,
+                    // msg.sender,
                     _campaign_name,
                     _levels,
                     _seats,
@@ -170,10 +167,11 @@ contract Server {
                     _abstraction
                 )
             );
+        Campaign(campaign_address).setOwner(msg.sender);
         campaigns.push(server_campaign(campaign_address, true));
         Users users = Users(users_address);
-        users.addCampaign(msg.sender, campaign_address);
-        message = "success";
+        users.addCampaign(address(msg.sender), campaign_address);
+        string memory message = "success";
         emit OnAddCampaign(message);
     }
 
@@ -181,6 +179,7 @@ contract Server {
         public
         view
         returns (
+            // string memory link,
             uint256[] memory seats,
             string memory campaign_name,
             uint256[] memory price,
@@ -200,16 +199,24 @@ contract Server {
         start_sell_time = currentCampaign.start_sell_time();
         abstraction = currentCampaign.abstraction();
         remain = currentCampaign.getRemain();
+        // link = currentCampaign.link();
+        
+    }
+
+    function viewCampaign2(address payable campaign_address) 
+        public view 
+        returns(string memory link)
+    {
+        link = Campaign(campaign_address).link();
     }
 
     function getUserTickets()
         public
         view
-        
         returns (address[] memory , uint256[] memory , uint256[] memory)
     {
         Users users = Users(users_address);
-        return users.ViewTickets(msg.sender);
+        return users.ViewTickets(address(msg.sender));
     }
 
     function getUserCampaigns()
@@ -218,7 +225,7 @@ contract Server {
         returns (address[] memory u_campaigns)
     {
         Users users = Users(users_address);
-        return users.ViewCampaigns(msg.sender);
+        return users.ViewCampaigns(address(msg.sender));
     }
 
     function getCampaigns() public view returns (address[] memory ) {
@@ -255,13 +262,13 @@ contract Server {
         Users users = Users(users_address);
         Campaign c = Campaign(campaign_address);
         if (c.remain(level) >= amount) {
-            seat_num = c.buy{value: msg.value}(msg.sender, amount, level);
+            seat_num = c.buy{value: msg.value}(address(msg.sender), amount, level);
         } else {
             message = "fail";
             emit OnBuyTicket(message);
         }
         for (uint256 i = 0; i < seat_num.length; i++) {
-            users.addTicket(msg.sender, campaign_address, seat_num[i], level);
+            users.addTicket(address(msg.sender), campaign_address, seat_num[i], level);
         }
         message = "success";
         emit OnBuyTicket(message);
@@ -336,20 +343,20 @@ contract Users {
     _;
     }
 
-    function isValidCampaign(uint256 _campaignId) 
+    function isValidCampaign(address user, uint256 _campaignId) 
         public 
         view 
         returns(bool)
     {
-        return addr_to_U[msg.sender].campaigns[_campaignId].isValid;
+        return addr_to_U[user].campaigns[_campaignId].isValid;
     }
 
-    function isValidTicket(uint256 _ticketId) 
+    function isValidTicket(address user, uint256 _ticketId) 
         public 
         view 
         returns(bool)      
     {
-        return addr_to_U[msg.sender].tickets[_ticketId].isValid;
+        return addr_to_U[user].tickets[_ticketId].isValid;
     }
 
     function addUser(address user_addr)
@@ -408,7 +415,7 @@ contract Users {
         uint256 len = 0;
         uint256[] memory count_to_id = new uint256[](addr_to_U[user].amount_campaigns);
         for (uint256 id = 0; id < addr_to_U[user].amount_campaigns; id++) {
-            if (isValidCampaign(id)) {
+            if (isValidCampaign(user, id)) {
                 count_to_id[len] = id;
                 len++;
             }
@@ -435,7 +442,7 @@ contract Users {
         uint256 len = 0;
         uint256[] memory count_to_id = new uint256[](addr_to_U[user].amount_tickets);
         for (uint256 id = 0; id < addr_to_U[user].amount_tickets; id++) {
-            if (isValidTicket(id)) {
+            if (isValidTicket(user, id)) {
                 count_to_id[len] = id;
                 len++;
             }
@@ -461,7 +468,7 @@ contract Users {
     function CompleteTicket(address user, address _ticket_address, uint256 _level, uint256 _seat_num) public 
     {
         for (uint256 id = 0; id < addr_to_U[user].amount_tickets; id++) {
-            if (isValidTicket(id)) {
+            if (isValidTicket(user, id)) {
                 if (addr_to_U[user].tickets[id].attend_address == _ticket_address &&
                     addr_to_U[user].tickets[id].level == _level &&
                     addr_to_U[user].tickets[id].seat == _seat_num){
@@ -477,7 +484,7 @@ contract Users {
     function RefundTicket(address user, address _ticket_address, uint256 _level, uint256 _seat_num) public 
     {
         for (uint256 id = 0; id < addr_to_U[user].amount_tickets; id++) {
-            if (isValidTicket(id)) {
+            if (isValidTicket(user, id)) {
                 if (addr_to_U[user].tickets[id].attend_address == _ticket_address &&
                     addr_to_U[user].tickets[id].level == _level &&
                     addr_to_U[user].tickets[id].seat == _seat_num){

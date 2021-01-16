@@ -112,6 +112,7 @@ export default function Creating(props) {
         //   info.abstraction
         // )
         .addCampaign(
+          imageLink,
           info.campaign_name,
           2,
           [10, 20],
