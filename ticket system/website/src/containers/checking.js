@@ -119,11 +119,15 @@ export default function Checking(props) {
             .viewCampaign(my_campaigns[i])
             .call({ from: props.accounts[0] })
         );
+        let image_link = await props.methods
+                      .viewCampaign2(my_campaigns[i])
+                      .call({ from: props.accounts[0] })
         let tmp = new Date(parseInt(c[i]["campaign_start_time"]));
         c[i]["campaign_start_time"] = convert(tmp);
         tmp = new Date(parseInt(c[i]["campaign_end_time"]));
         c[i]["campaign_end_time"] = convert(tmp);
         c[i]["address"] = my_campaigns[i];
+        c[i]["image"] = image_link;
       }
     }
     // for (let i = 0; i < c.length; i++){
@@ -282,7 +286,7 @@ export default function Checking(props) {
                   <Card className={classes.card}>
                     <CardMedia
                       className={classes.cardMedia}
-                      image="https://source.unsplash.com/random"
+                      image={campaign.image}
                       title={campaign.campaign_name}
                     />
                     <CardContent className={classes.cardContent}>

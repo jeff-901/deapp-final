@@ -80,6 +80,7 @@ export default function Booking(props) {
   const [campaigns, setCampaigns] = useState([]);
   const [open, setOpen] = useState([]);
   const [open1, setOpen1] = useState([]);
+  const [loading, setLoading] = useState(false);
   useEffect(async () => {
     console.log("fetch data");
     let result = await props.methods
@@ -99,6 +100,9 @@ export default function Booking(props) {
             .viewCampaign(result[i])
             .call({ from: props.accounts[0] })
         );
+        let image_link = await props.methods
+                      .viewCampaign2(result[i])
+                      .call({ from: props.accounts[0] })
         let tmp  = new Date(parseInt(c[i]["campaign_start_time"]))
         c[i]["campaign_start_time"] = convert(tmp);
         tmp  = new Date(parseInt(c[i]["campaign_end_time"]))
@@ -106,6 +110,7 @@ export default function Booking(props) {
         tmp  = new Date(parseInt(c[i]["start_sell_time"]))
         c[i]["start_sell_time"] = tmp;
         c[i]["address"] = result[i];
+        c[i]["image"] = image_link;
       }
       console.log(c);
     }
@@ -157,6 +162,7 @@ export default function Booking(props) {
             </Typography>
           </Container>
         </div>
+        { loading == false ? (
         <Container className={classes.cardGrid} maxWidth="md">
           {/* End hero unit */}
           {campaigns.length != 0 ? (
@@ -166,7 +172,7 @@ export default function Booking(props) {
                   <Card className={classes.card}>
                     <CardMedia
                       className={classes.cardMedia}
-                      image="https://source.unsplash.com/random"
+                      image={campaign.image}
                       title={campaign.campaign_name}
                     />
                     <CardContent className={classes.cardContent}>
@@ -193,6 +199,7 @@ export default function Booking(props) {
                       <BookModal
                         open={open[index]}
                         setOpen={setOpen}
+                        setLoading={setLoading}
                         campaign={campaign}
                         methods={props.methods}
                         accounts={props.accounts}
@@ -206,6 +213,10 @@ export default function Booking(props) {
             <h1>There is no campaign yet</h1>
           )}
         </Container>
+        ) : (
+          <h1>Booking the champaign...</h1>
+        )
+      }
       </main>
       {/* Footer */}
       <footer className={classes.footer}>

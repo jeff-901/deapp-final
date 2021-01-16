@@ -175,33 +175,7 @@ export default function Creating(props) {
                       autoFocus
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="image"
-                      label="Image"
-                      type="file"
-                      onChange={(e) => {
-                        let reader = new FileReader();
-                        imgLoading = true;
-                        reader.onload = (e) => {
-                          imgLoading = false;
-                          setInfo((info) => ({
-                            ...info,
-                            ["image"]: e.target.result,
-                          }));
-                        };
-                        reader.readAsDataURL(e.target.files[0]);
-                        // setInfo((info) => ({
-                        //   ...info,
-                        //   ["image"]: e.target.files[0],
-                        // }));
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     <TextField
                       variant="outlined"
                       required
@@ -224,7 +198,7 @@ export default function Creating(props) {
                       ))}
                     </TextField>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     <TextField
                       variant="outlined"
                       required
@@ -239,7 +213,7 @@ export default function Creating(props) {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     <TextField
                       variant="outlined"
                       required
@@ -353,6 +327,32 @@ export default function Creating(props) {
                           ...info,
                           ["sell_time"]: e.target.value,
                         }));
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="image"
+                      label=""
+                      type="file"
+                      onChange={(e) => {
+                        let reader = new FileReader();
+                        imgLoading = true;
+                        reader.onload = (e) => {
+                          imgLoading = false;
+                          setInfo((info) => ({
+                            ...info,
+                            ["image"]: e.target.result,
+                          }));
+                        };
+                        reader.readAsDataURL(e.target.files[0]);
+                        // setInfo((info) => ({
+                        //   ...info,
+                        //   ["image"]: e.target.files[0],
+                        // }));
                       }}
                     />
                   </Grid>
