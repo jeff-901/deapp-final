@@ -168,7 +168,7 @@ export default function BookModal(props) {
                 Seat Number: {props.campaign.seat_num}
               </Typography>
               <Typography component="p" variant="h5" className={classes.time}>
-                Price: {props.campaign.price[0]}
+                Price: {props.campaign.price}
               </Typography>
             </Grid>
            

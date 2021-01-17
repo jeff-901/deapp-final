@@ -15,6 +15,7 @@ import ReturnMain from "../components/returnmain";
 import MyAppBar from "../components/myapppbar";
 import CheckModal from "../components/CheckModal";
 import CashModal from "../components/CashModal";
+import Web3 from "web3";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -94,6 +95,9 @@ export default function Checking(props) {
             .viewCampaign(result[0][i])
             .call({ from: props.accounts[0] })
         );
+        let image_link = await props.methods
+                      .viewCampaign2(result[0][i])
+                      .call({ from: props.accounts[0] })
         let tmp = new Date(parseInt(t[i]["campaign_start_time"]));
         t[i]["campaign_start_time"] = convert(tmp);
         tmp = new Date(parseInt(t[i]["campaign_end_time"]));
@@ -101,9 +105,12 @@ export default function Checking(props) {
         t[i]["address"] = result[0][i];
         t[i]["level"] = result[1][i];
         t[i]["seat_num"] = result[2][i];
+        t[i]["image"] = image_link;
+        t[i]["price"] = Web3.utils.fromWei(t[i]["price"][t[i]["level"]].toString(), "ether")
       }
     }
     setTickets(t);
+    console.log(tickets)
 
     my_campaigns = await props.methods
       .getUserCampaigns()
@@ -128,6 +135,11 @@ export default function Checking(props) {
         c[i]["campaign_end_time"] = convert(tmp);
         c[i]["address"] = my_campaigns[i];
         c[i]["image"] = image_link;
+        let p = []
+        for(let j = 0; j < c[i]["price"].length;j++){
+          p.push(Web3.utils.fromWei(c[i]["price"][j].toString(), "ether"));
+        }
+        c[i]["price"] = p;
       }
     }
     // for (let i = 0; i < c.length; i++){
@@ -229,7 +241,7 @@ export default function Checking(props) {
                   <Card className={classes.card}>
                     <CardMedia
                       className={classes.cardMedia}
-                      image="https://source.unsplash.com/random"
+                      image={ticket.image}
                       title={ticket.campaign_name}
                     />
                     <CardContent className={classes.cardContent}>

@@ -41,8 +41,8 @@ export default function Creating(props) {
     image: null,
     campaign_name: "NTU Basketball Cup",
     level: 1,
-    seats: 0,
-    price: 0,
+    seats: [0],
+    price: [0],
     start_time: "2021-01-01",
     end_time: "2021-01-01",
     sell_time: "2021-01-01T12:00",
@@ -81,9 +81,36 @@ export default function Creating(props) {
     };
     r.send(formData);
   };
+
+  const handlePChange = (event, index) => {
+    let arr = info.price;
+    arr[index] = event.target.value;
+    setInfo((info) => ({
+      ...info,
+      ["price"]: arr,
+    }));
+  };
+  const handleSChange = (event, index) => {
+    let arr = info.seats;
+    arr[index] = event.target.value;
+    setInfo((info) => ({
+      ...info,
+      ["seats"]: arr,
+    }));
+  };
+
   const handleCreate = async () => {
     console.log("create");
-    await getUrl();
+    
+    console.log(info)
+    if(info.image === null){
+      setLoading(false);
+      alert("Please upload the image!");
+      return
+    }
+    else {
+      await getUrl();
+    }
     console.log("imageLink: ", imageLink);
     // console.log(props.methods.addCampaign)
     // console.log("user: ", props.user);
@@ -98,8 +125,13 @@ export default function Creating(props) {
       info.abstraction &&
       !imgLoading
     ) {
-      let wei = Web3.utils.toWei("0.5", "ether");
-      let wei2 = Web3.utils.toWei("0.1", "ether");
+      // let p = info.price.split(',');
+      // let s = info.seats.split(',');
+      info.price = info.price.slice(0,info.level);
+      info.seats = info.seats.slice(0,info.level);
+      for(let i = 0; i < info.price.length; i++){
+        info.price[i] = Web3.utils.toWei(info.price[i], "ether");
+      }
       let result = await props.methods
         // .addCampaign(
         //   info.campaign_name,
@@ -114,9 +146,9 @@ export default function Creating(props) {
         .addCampaign(
           imageLink,
           info.campaign_name,
-          2,
-          [10, 20],
-          [wei, wei2],
+          info.level,
+          info.seats,
+          info.price,
           /*info.levels, info.seats, info.price, startTime, endTime, sellTime*/
           Date.parse(info.start_time),
           Date.parse(info.end_time),
@@ -206,10 +238,11 @@ export default function Creating(props) {
                       id="price"
                       label="Price"
                       onChange={(e) => {
-                        setInfo((info) => ({
-                          ...info,
-                          ["price"]: e.target.value,
-                        }));
+                        handlePChange(e,0);
+                        // setInfo((info) => ({
+                        //   ...info,
+                        //   ["price"]: [e.target.value],
+                        // }));
                       }}
                     />
                   </Grid>
@@ -221,13 +254,82 @@ export default function Creating(props) {
                       id="seats"
                       label="Seats"
                       onChange={(e) => {
-                        setInfo((info) => ({
-                          ...info,
-                          ["seats"]: e.target.value,
-                        }));
+                        handleSChange(e,0);
+                        // setInfo((info) => ({
+                        //   ...info,
+                        //   ["seats"]: [e.target.value],
+                        // }));
                       }}
                     />
                   </Grid>
+                  {info.level===1 ? (
+                  <br/>
+                  ) : (
+                  <>
+                    <Grid item xs={12} sm={4}>
+                      <Typography component="h1" variant="h5"/>
+                    </Grid>
+                      <Grid item xs={12} sm={4}>
+                      <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="price"
+                        label="Price"
+                        onChange={(e) => {
+                          handlePChange(e,1);
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="seats"
+                        label="Seats"
+                        onChange={(e) => {
+                          handleSChange(e,1);
+                        }}
+                      />
+                    </Grid>
+                  </>
+                  )}
+                  {info.level <=2 ? (
+                    <br/>
+                  ):(
+                    <>
+                    <Grid item xs={12} sm={4}>
+                      <Typography component="h1" variant="h5"/>
+                    </Grid>
+                      <Grid item xs={12} sm={4}>
+                      <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="price"
+                        label="Price"
+                        onChange={(e) => {
+                          handlePChange(e,2);
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="seats"
+                        label="Seats"
+                        onChange={(e) => {
+                          handleSChange(e,2);
+                        }}
+                      />
+                    </Grid>
+                  </>
+                  )
+                  }
+                  
                   <Grid item xs={12} sm={6}>
                     {/* <TextField
                     variant="outlined"

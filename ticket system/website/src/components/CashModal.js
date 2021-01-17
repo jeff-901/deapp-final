@@ -1,5 +1,5 @@
 // refer to: https://github.com/mui-org/material-ui/tree/master/docs/src/pages/getting-started/templates/sign-up
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -123,6 +123,15 @@ export default function BookModal(props) {
 
   let start_time = new Date(props.campaign.campaign_start_time);
   let end_time = new Date(props.campaign.campaign_end_time);
+  useEffect(() => {
+    let tmp = 0
+    for(let i = 0;i < props.campaign.price.length;i++){
+      tmp += props.campaign.price[i]*(parseInt(props.campaign.seats[i])-parseInt(props.campaign.remain[i]));
+    }
+    setAmount(tmp);
+  }
+  );
+  
   return (
     <Modal
       open={props.open}
@@ -161,19 +170,23 @@ export default function BookModal(props) {
             
             <Grid item xs={12}>
               <Typography component="p" variant="h5" className={classes.time}>
-                Price: {props.campaign.price[0]}
+                Price: {props.campaign.price.map((p,index)=>(
+                  p+" "
+                  ))}
               </Typography>
             </Grid>
 
             <Grid item xs={12}>
               <Typography component="p" variant="h5" className={classes.time}>
-                Amount: {props.campaign.remain[1]}
+                Amount: {props.campaign.remain.map((r,index)=>(
+                  parseInt(r)+" "
+                  ))}
               </Typography>
             </Grid>
 
             <Grid item xs={12}>
               <Typography component="p" variant="h5" className={classes.time}>
-                Total Amount: {props.campaign.price[0]*props.campaign.remain[1]}
+                Total Amount: {amount}
               </Typography>
             </Grid>
            
