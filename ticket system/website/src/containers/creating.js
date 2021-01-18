@@ -150,9 +150,9 @@ export default function Creating(props) {
           info.seats,
           info.price,
           /*info.levels, info.seats, info.price, startTime, endTime, sellTime*/
-          Date.parse(info.start_time),
-          Date.parse(info.end_time),
-          Date.parse(info.sell_time),
+          parseInt(Number(Date.parse(info.start_time)/1000)),
+          parseInt(Number(Date.parse(info.end_time)/1000)),
+          parseInt(Number(Date.parse(info.sell_time)/1000)),
           info.abstraction
         )
         .send({ from: props.accounts[0] });
