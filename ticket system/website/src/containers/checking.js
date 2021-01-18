@@ -98,9 +98,9 @@ export default function Checking(props) {
         let image_link = await props.methods
                       .viewCampaign2(result[0][i])
                       .call({ from: props.accounts[0] })
-        let tmp = new Date(parseInt(t[i]["campaign_start_time"]));
+        let tmp = new Date(parseInt(t[i]["campaign_start_time"])*1000);
         t[i]["campaign_start_time"] = convert(tmp);
-        tmp = new Date(parseInt(t[i]["campaign_end_time"]));
+        tmp = new Date(parseInt(t[i]["campaign_end_time"])*1000);
         t[i]["campaign_end_time"] = convert(tmp);
         t[i]["address"] = result[0][i];
         t[i]["level"] = result[1][i];
@@ -129,9 +129,9 @@ export default function Checking(props) {
         let image_link = await props.methods
                       .viewCampaign2(my_campaigns[i])
                       .call({ from: props.accounts[0] })
-        let tmp = new Date(parseInt(c[i]["campaign_start_time"]));
+        let tmp = new Date(parseInt(c[i]["campaign_start_time"])*1000);
         c[i]["campaign_start_time"] = convert(tmp);
-        tmp = new Date(parseInt(c[i]["campaign_end_time"]));
+        tmp = new Date(parseInt(c[i]["campaign_end_time"])*1000);
         c[i]["campaign_end_time"] = convert(tmp);
         c[i]["address"] = my_campaigns[i];
         c[i]["image"] = image_link;
