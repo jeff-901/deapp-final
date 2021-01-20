@@ -8,7 +8,6 @@ It is a decentralized online event ticket platform providing integrated service 
 
 + Target at students or small groups to share their knowledge or skills
 + Provide a good opportunity for young artists to show themself
-+ 
 
 ### To Start
 
