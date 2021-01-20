@@ -35,7 +35,7 @@ complete content of all the requirement are in these two file under directory "*
 3 functions in main page (no need to login in, since you have unique Ethereum account).
 
 - **Creating**: 
-Create a new campaign, you can specify how many levels of tickets, amount of seats for each level, starting time, ending time, and abstraction. After pressing "**Create Now!**" button, metamask will ask for some fee, and the whole transaction will last few to dozens of second depending the gas you give to miner and how many users are on the bolckchain.
+Create a new campaign, you can specify how many levels of tickets, amount of seats for each level, starting time, ending time, and abstraction. After pressing "**Create Now!**" button, metamask will ask for some fee, and the whole transaction will last few to dozens of second depending on the gas you give to miner and how many users are on the bolckchain.
 After finidhing the transaction, you should see the created campaign when you enter **Checking** page, and **can be seen by all the other users** 
 
 - **Booking**:
@@ -47,7 +47,7 @@ Here you can check all of tickets you bought, and campaigns you host. Those camp
 ![](https://i.imgur.com/v06V97h.png)
 
 ### Future Work
-Two directrions of improvments are needed, one is speed, another is fairness. The fromer was constrained by the transaction speed of Ethereum. Transaction speed on blockchain still could not bear other means of payment like VISA. While the other part is arised from that user can give various gas to miners, so if an user is more willing to pay more tips, than he has higher probablity to successfully buy hot tickets. However, since we target at niche market, this may not be a big problem by far. 
+Two directrions of improvments are considered, one is speed, another is fairness. The fromer was constrained by the transaction speed of Ethereum. Transaction speed on blockchain still could not bear other means of payment like VISA. While the other part is arised from that user can give various gas to miners, so if an user is more willing to pay more tips, than he has higher probablity to successfully buy hot tickets. However, since we target at niche market, this may not be a big problem by far. 
 
 ### Architecture
 
