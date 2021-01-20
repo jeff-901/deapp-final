@@ -214,7 +214,7 @@ export default function Booking(props) {
           )}
         </Container>
         ) : (
-          <h1>Booking the champaign...</h1>
+          <h1>Booking the campaign...</h1>
         )
       }
       </main>
